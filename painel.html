@@ -314,7 +314,7 @@ const AUTH_KEY = 'portalAulasAuth';
 const SENHA_PADRAO = 'aulas2025';
 
 function getCfg()    { try{ return JSON.parse(localStorage.getItem(CFG_KEY))||{}; }catch(e){ return {}; } }
-function getApiUrl() { return getCfg().apiUrl || "https://script.google.com/macros/s/SEU_APPS_SCRIPT_URL_AQUI/exec"; }
+function getApiUrl() { return getCfg().apiUrl || "https://script.google.com/macros/s/AKfycbwDdc6bmJYcdgzWko3_tFFfentCPB0ahqoaeoqxbrG36iA92X9L3XZWOwoe9Rfn_Q5V/exec"; }
 function getSenha()  { return getCfg().senha || SENHA_PADRAO; }
 
 // ── LOGIN (sessionStorage — expira ao fechar) ──
