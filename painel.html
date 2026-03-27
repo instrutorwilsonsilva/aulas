@@ -1,1 +1,521 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Painel do Professor — Portal de Aulas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{ --azul:#004aad; --azul-e:#00317a; --verde:#00b86b; --vermelho:#e53935; --amarelo:#f59e0b; --bg:#f0f4fb; --border:#e2e8f4; --texto:#1a2340; --muted:#5a6a8a; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ font-family:'Barlow',sans-serif; background:var(--bg); color:var(--texto); min-height:100vh; }
+
+/* LOGIN */
+#login-screen{ position:fixed; inset:0; z-index:9999; background:linear-gradient(135deg,#0d1a30,#00317a); display:flex; align-items:center; justify-content:center; }
+.login-box{ background:white; border-radius:20px; width:90%; max-width:400px; padding:40px; text-align:center; box-shadow:0 30px 80px rgba(0,0,0,0.4); animation:popIn .4s cubic-bezier(.4,0,.2,1); }
+@keyframes popIn{ from{opacity:0;transform:scale(.9)translateY(20px)} to{opacity:1;transform:scale(1)translateY(0)} }
+.login-icon{ width:60px; height:60px; background:linear-gradient(135deg,var(--azul),#1a6dd4); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin:0 auto 20px; }
+.login-box h1{ font-family:'Barlow Condensed',sans-serif; font-size:1.6rem; font-weight:800; color:var(--texto); letter-spacing:1px; margin-bottom:4px; }
+.login-box p{ font-size:.85rem; color:var(--muted); margin-bottom:24px; }
+.login-campo{ width:100%; padding:12px 16px; border:1.5px solid var(--border); border-radius:10px; font-size:1rem; font-family:'Barlow',sans-serif; text-align:center; letter-spacing:4px; outline:none; margin-bottom:12px; transition:border-color .2s; }
+.login-campo:focus{ border-color:var(--azul); box-shadow:0 0 0 3px rgba(0,74,173,.1); }
+.login-erro{ background:#fff0f0; border:1px solid #fecaca; border-radius:8px; padding:8px; font-size:.82rem; color:var(--vermelho); margin-bottom:12px; display:none; }
+.btn-login{ width:100%; padding:13px; background:var(--azul); color:white; border:none; border-radius:10px; font-family:'Barlow',sans-serif; font-weight:600; font-size:1rem; cursor:pointer; transition:background .2s; }
+.btn-login:hover{ background:var(--azul-e); }
+.login-hint{ font-size:.72rem; color:#aab; margin-top:14px; }
+
+/* APP */
+#app{ display:none; flex-direction:column; min-height:100vh; }
+.app-header{ background:var(--azul); padding:0 28px; height:58px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 3px 12px rgba(0,0,0,.15); position:sticky; top:0; z-index:100; }
+.header-logo{ display:flex; align-items:center; gap:12px; }
+.header-badge{ width:36px; height:36px; background:rgba(255,255,255,.15); border-radius:9px; display:flex; align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:.95rem; color:white; }
+.header-txt{ font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.1rem; letter-spacing:2px; color:white; line-height:1; }
+.header-txt small{ font-size:.6rem; opacity:.5; font-weight:400; letter-spacing:1px; }
+.header-acoes{ display:flex; gap:10px; }
+.btn-h{ padding:6px 14px; border-radius:7px; font-family:'Barlow',sans-serif; font-weight:600; font-size:.8rem; cursor:pointer; transition:all .2s; border:none; }
+.btn-h-ghost{ background:rgba(255,255,255,.1); color:rgba(255,255,255,.7); }
+.btn-h-ghost:hover{ background:rgba(255,255,255,.2); color:white; }
+
+/* TABS */
+.app-tabs{ background:white; border-bottom:2px solid var(--border); display:flex; padding:0 28px; gap:2px; }
+.tab-btn{ padding:14px 20px; border:none; background:none; font-family:'Barlow',sans-serif; font-weight:600; font-size:.88rem; cursor:pointer; color:var(--muted); border-bottom:3px solid transparent; margin-bottom:-2px; transition:all .2s; }
+.tab-btn:hover{ color:var(--azul); }
+.tab-btn.ativa{ color:var(--azul); border-bottom-color:var(--azul); }
+
+.app-body{ padding:28px; max-width:900px; flex:1; }
+.tab-painel{ display:none; }
+.tab-painel.ativa{ display:block; }
+
+/* CARDS */
+.card{ background:white; border-radius:14px; border:1px solid var(--border); padding:24px; margin-bottom:20px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
+.card-titulo{ font-family:'Barlow Condensed',sans-serif; font-size:1.05rem; font-weight:700; color:var(--azul); letter-spacing:.5px; margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid var(--border); }
+
+/* FORM */
+.form-row{ margin-bottom:16px; }
+.form-row label{ display:block; font-weight:600; font-size:.83rem; margin-bottom:5px; }
+.form-row input, .form-row select, .form-row textarea{
+  width:100%; padding:9px 12px; border:1.5px solid var(--border); border-radius:8px;
+  font-size:.95rem; font-family:'Barlow',sans-serif; outline:none; transition:border-color .2s;
+}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{ border-color:var(--azul); box-shadow:0 0 0 3px rgba(0,74,173,.1); }
+.form-row textarea{ min-height:72px; resize:vertical; }
+.form-hint{ font-size:.75rem; color:var(--muted); margin-top:4px; }
+
+.curso-row{ display:flex; align-items:center; gap:12px; background:#f0f6ff; border:1px solid #c7d7f5; border-radius:10px; padding:12px 16px; margin-bottom:20px; flex-wrap:wrap; }
+.curso-row label{ font-weight:600; font-size:.88rem; color:var(--azul); white-space:nowrap; }
+.curso-row select{ flex:1; min-width:180px; padding:8px 12px; border:1.5px solid #c7d7f5; border-radius:8px; font-family:'Barlow',sans-serif; outline:none; }
+
+/* SIMULADORES DISPONÍVEIS */
+.sims-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; margin-top:8px; }
+.sim-option{
+  padding:10px 14px; border:1.5px solid var(--border); border-radius:8px;
+  background:white; cursor:pointer; transition:all .2s;
+  font-size:.83rem; color:var(--texto); text-align:left;
+  display:flex; align-items:center; gap:8px;
+}
+.sim-option:hover{ border-color:var(--verde); background:#e8f8f1; }
+.sim-option.selecionada{ border-color:var(--verde); background:#e8f8f1; color:#0f6e56; }
+.sim-option.sem-sim{ border-style:dashed; color:var(--muted); }
+.sim-option.sem-sim:hover{ border-color:#aab; background:var(--bg); }
+#sim-selecionada-display{ font-size:.82rem; color:var(--muted); margin-top:6px; }
+
+/* BOTÕES */
+.btn-row{ display:flex; gap:12px; margin-top:20px; flex-wrap:wrap; }
+.btn{ padding:11px 22px; border:none; border-radius:9px; font-family:'Barlow',sans-serif; font-weight:600; font-size:.9rem; cursor:pointer; transition:all .2s; flex:1; min-width:130px; }
+.btn-primario{ background:var(--azul); color:white; box-shadow:0 3px 12px rgba(0,74,173,.25); }
+.btn-primario:hover{ background:var(--azul-e); }
+.btn-sucesso{ background:var(--verde); color:white; }
+.btn-sucesso:hover{ background:#009058; }
+.btn-perigo{ background:#fff0f0; color:var(--vermelho); border:1px solid #fecaca; }
+.btn-perigo:hover{ background:#ffe0e0; }
+.btn:disabled{ opacity:.5; cursor:not-allowed; }
+
+/* LISTA DE AULAS */
+.aula-item{ display:flex; align-items:flex-start; gap:12px; padding:14px; border:1px solid var(--border); border-radius:10px; margin-bottom:10px; background:white; transition:box-shadow .2s; }
+.aula-item:hover{ box-shadow:0 3px 12px rgba(0,74,173,.1); }
+.aula-num-badge{ background:var(--azul); color:white; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:.82rem; flex-shrink:0; }
+.aula-body{ flex:1; }
+.aula-titulo-lista{ font-size:.9rem; color:var(--texto); font-weight:600; margin-bottom:3px; }
+.aula-meta{ font-size:.76rem; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap; }
+.aula-sim-badge{ background:#e8f8f1; color:#0f6e56; padding:2px 8px; border-radius:10px; font-size:.72rem; font-weight:600; }
+.aula-actions{ display:flex; gap:6px; flex-shrink:0; }
+.btn-sm{ padding:5px 10px; font-size:.76rem; border:none; border-radius:6px; cursor:pointer; font-family:'Barlow',sans-serif; font-weight:600; transition:background .2s; }
+.btn-editar{ background:#eef4ff; color:var(--azul); }
+.btn-del{ background:#ffebee; color:#c62828; }
+.btn-editar:hover{ background:#d8e8ff; }
+.btn-del:hover{ background:#ffcdd2; }
+
+/* STATS */
+.stats-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-bottom:20px; }
+.stat-card{ background:#f0f6ff; border:1px solid #c7d7f5; border-radius:10px; padding:14px; text-align:center; }
+.stat-num{ font-family:'Barlow Condensed',sans-serif; font-size:2rem; font-weight:800; color:var(--azul); line-height:1; }
+.stat-lbl{ font-size:.75rem; color:var(--muted); margin-top:3px; }
+
+/* TOAST */
+#toast{ position:fixed; bottom:24px; right:24px; padding:12px 20px; border-radius:10px; color:white; font-weight:600; font-size:.88rem; box-shadow:0 4px 20px rgba(0,0,0,.2); opacity:0; transform:translateY(10px); transition:all .3s; z-index:9999; pointer-events:none; }
+#toast.show{ opacity:1; transform:translateY(0); }
+#toast.ok{ background:var(--verde); }
+#toast.err{ background:var(--vermelho); }
+#toast.av{ background:var(--amarelo); color:#1a2340; }
+.spin{ display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,.3); border-top-color:white; border-radius:50%; animation:sp .6s linear infinite; vertical-align:middle; margin-right:5px; }
+@keyframes sp{ to{transform:rotate(360deg)} }
+
+@media(max-width:640px){ .app-body{ padding:14px; } .app-tabs{ overflow-x:auto; } }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-icon">🔐</div>
+    <h1>PAINEL DO PROFESSOR</h1>
+    <p>Portal de Aulas — Acesso restrito</p>
+    <div id="login-erro" class="login-erro">Senha incorreta. Tente novamente.</div>
+    <input type="password" class="login-campo" id="login-senha" placeholder="••••••••" maxlength="30" onkeydown="if(event.key==='Enter')tentarLogin()"/>
+    <button class="btn-login" onclick="tentarLogin()">Entrar</button>
+    <a href="index.html" style="display:block;margin-top:14px;font-size:.8rem;color:#aab;text-decoration:none;">← Voltar ao portal</a>
+    <p class="login-hint">Senha padrão: aulas2025</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="app-header">
+    <div class="header-logo">
+      <div class="header-badge">PA</div>
+      <div class="header-txt">PAINEL DO PROFESSOR<small>Portal de Aulas</small></div>
+    </div>
+    <div class="header-acoes">
+      <button class="btn-h btn-h-ghost" onclick="window.open('index.html','_blank')">🎓 Ver Portal</button>
+      <button class="btn-h btn-h-ghost" onclick="sair()">Sair</button>
+    </div>
+  </div>
+
+  <div class="app-tabs">
+    <button class="tab-btn ativa" onclick="trocarAba('cadastrar',this)">➕ Cadastrar Aula</button>
+    <button class="tab-btn" onclick="trocarAba('listar',this)">📋 Aulas Cadastradas</button>
+    <button class="tab-btn" onclick="trocarAba('simuladores',this)">⚡ Simuladores</button>
+    <button class="tab-btn" onclick="trocarAba('config',this)">⚙️ Config</button>
+  </div>
+
+  <div class="app-body">
+
+    <!-- ABA CADASTRAR -->
+    <div class="tab-painel ativa" id="tab-cadastrar">
+      <div class="card">
+        <div class="card-titulo">➕ Cadastrar Nova Aula</div>
+
+        <div class="curso-row">
+          <label>📚 Curso:</label>
+          <select id="sel-curso">
+            <option value="">Selecione o curso...</option>
+            <option value="instalacoes-eletricas">Instalações Elétricas</option>
+            <option value="automacao-industrial">Automação Industrial</option>
+            <option value="eletronica">Eletrônica</option>
+            <option value="redes-computadores">Redes de Computadores</option>
+            <option value="ciber-sistemas">Ciber Sistemas</option>
+          </select>
+        </div>
+
+        <div style="display:grid;grid-template-columns:80px 1fr;gap:14px;">
+          <div class="form-row">
+            <label>Nº da Aula</label>
+            <input type="number" id="num-aula" min="1" max="99" placeholder="1"/>
+          </div>
+          <div class="form-row">
+            <label>Título da Aula *</label>
+            <input type="text" id="titulo-aula" placeholder="Ex: Fundamentos de Instalações Elétricas"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Descrição <span style="font-weight:400;color:var(--muted)">(opcional)</span></label>
+          <textarea id="desc-aula" placeholder="Breve descrição do conteúdo desta aula..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label>Link do Google Drive (arquivo .pptx) *</label>
+          <input type="url" id="link-drive" placeholder="https://drive.google.com/file/d/..."/>
+          <div class="form-hint">
+            No Drive: botão direito no arquivo → Compartilhar → "Qualquer pessoa com o link" → copiar link
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Simulador vinculado <span style="font-weight:400;color:var(--muted)">(opcional)</span></label>
+          <div class="form-hint" style="margin-bottom:8px;">Selecione um simulador para abrir junto com esta aula:</div>
+          <div class="sims-grid" id="sims-grid-cadastro">
+            <!-- preenchido via JS -->
+          </div>
+          <input type="hidden" id="link-simulador"/>
+          <div id="sim-selecionada-display">Nenhum simulador selecionado</div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-sucesso" id="btn-salvar" onclick="salvarAula()">💾 Salvar Aula</button>
+          <button class="btn btn-perigo" onclick="limparForm()">🗑 Limpar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA LISTAR -->
+    <div class="tab-painel" id="tab-listar">
+      <div class="card">
+        <div class="card-titulo">📋 Aulas Cadastradas</div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-lbl">total de aulas</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-sims">—</div><div class="stat-lbl">com simulador</div></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+          <select id="filtro-curso" onchange="filtrarAulas()" style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;outline:none;">
+            <option value="">Todos os cursos</option>
+            <option value="instalacoes-eletricas">Instalações Elétricas</option>
+            <option value="automacao-industrial">Automação Industrial</option>
+            <option value="eletronica">Eletrônica</option>
+            <option value="redes-computadores">Redes de Computadores</option>
+            <option value="ciber-sistemas">Ciber Sistemas</option>
+          </select>
+          <button class="btn btn-primario" style="flex:none;padding:8px 18px;min-width:auto;" onclick="carregarAulas()">🔄</button>
+        </div>
+        <div id="lista-aulas"><p style="color:var(--muted);text-align:center;">Clique em 🔄 para carregar.</p></div>
+      </div>
+    </div>
+
+    <!-- ABA SIMULADORES -->
+    <div class="tab-painel" id="tab-simuladores">
+      <div class="card">
+        <div class="card-titulo">⚡ Simuladores Disponíveis</div>
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:16px;line-height:1.6;">
+          Os simuladores ficam na pasta <code>/simuladores/</code> do repositório. Para adicionar um novo, crie o arquivo HTML lá e adicione-o no array <code>SIMULADORES</code> abaixo (em <code>painel.html</code>).
+        </p>
+        <div id="lista-simuladores-config"></div>
+      </div>
+    </div>
+
+    <!-- ABA CONFIG -->
+    <div class="tab-painel" id="tab-config">
+      <div class="card">
+        <div class="card-titulo">⚙️ Configuração</div>
+        <div class="form-row">
+          <label>URL do Google Apps Script</label>
+          <input type="text" id="cfg-url" placeholder="https://script.google.com/macros/s/..."/>
+        </div>
+        <div class="form-row">
+          <label>Alterar senha do painel</label>
+          <input type="password" id="cfg-senha" placeholder="Nova senha (mín. 4 caracteres)"/>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primario" onclick="salvarConfig()">💾 Salvar</button>
+          <button class="btn btn-perigo" style="flex:none;" onclick="testarConexao()">🔗 Testar conexão</button>
+        </div>
+        <div id="cfg-status" style="margin-top:14px;font-size:.85rem;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-titulo">📋 Estrutura da Planilha</div>
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px;">Aba <strong>Aulas</strong> — colunas:</p>
+        <table style="width:100%;border-collapse:collapse;font-size:.83rem;">
+          <thead><tr style="background:var(--azul);color:white;">
+            <th style="padding:7px 10px;text-align:left;">A</th><th style="padding:7px 10px;text-align:left;">B</th>
+            <th style="padding:7px 10px;text-align:left;">C</th><th style="padding:7px 10px;text-align:left;">D</th>
+            <th style="padding:7px 10px;text-align:left;">E</th><th style="padding:7px 10px;text-align:left;">F</th>
+          </tr></thead>
+          <tbody><tr style="background:#f0f6ff;">
+            <td style="padding:7px 10px;">curso</td><td style="padding:7px 10px;">numero</td>
+            <td style="padding:7px 10px;">titulo</td><td style="padding:7px 10px;">descricao</td>
+            <td style="padding:7px 10px;">link_drive</td><td style="padding:7px 10px;">link_simulador</td>
+          </tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── SIMULADORES CADASTRADOS ──
+// Para adicionar um novo simulador: inclua um objeto aqui
+const SIMULADORES = [
+  { id:"estrela-triangulo",  nome:"Partida Estrela-Triângulo", icone:"⚙️", arquivo:"simuladores/estrela-triangulo.html" },
+  { id:"retificador",        nome:"Retificador de Onda",       icone:"〰️", arquivo:"simuladores/retificador.html"       },
+  { id:"circuito-rl",        nome:"Circuito RL/RC",            icone:"🔌", arquivo:"simuladores/circuito-rl.html"       },
+  { id:"pneumatico",         nome:"Circuito Pneumático",       icone:"💨", arquivo:"simuladores/pneumatico.html"        },
+  { id:"ladder-clp",         nome:"Diagrama Ladder / CLP",     icone:"🖥️", arquivo:"simuladores/ladder-clp.html"       },
+];
+
+// ── CONFIG ──
+const CFG_KEY  = 'portalAulasCfg';
+const AUTH_KEY = 'portalAulasAuth';
+const SENHA_PADRAO = 'aulas2025';
+
+function getCfg()    { try{ return JSON.parse(localStorage.getItem(CFG_KEY))||{}; }catch(e){ return {}; } }
+function getApiUrl() { return getCfg().apiUrl || "https://script.google.com/macros/s/SEU_APPS_SCRIPT_URL_AQUI/exec"; }
+function getSenha()  { return getCfg().senha || SENHA_PADRAO; }
+
+// ── LOGIN (sessionStorage — expira ao fechar) ──
+window.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem(AUTH_KEY)==='ok') mostrarApp();
+  const cfg = getCfg();
+  if (cfg.apiUrl) document.getElementById('cfg-url').value = cfg.apiUrl;
+  renderSimsGrid();
+  renderSimsConfig();
+});
+
+function tentarLogin() {
+  if (document.getElementById('login-senha').value === getSenha()) {
+    sessionStorage.setItem(AUTH_KEY,'ok');
+    mostrarApp();
+  } else {
+    document.getElementById('login-erro').style.display='block';
+    document.getElementById('login-senha').value='';
+    document.getElementById('login-senha').focus();
+  }
+}
+function mostrarApp() {
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('app').style.flexDirection='column';
+}
+function sair() { sessionStorage.removeItem(AUTH_KEY); location.reload(); }
+
+// ── ABAS ──
+function trocarAba(id, btn) {
+  document.querySelectorAll('.tab-painel').forEach(p=>p.classList.remove('ativa'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('ativa'));
+  document.getElementById('tab-'+id).classList.add('ativa');
+  btn.classList.add('ativa');
+  if (id==='listar') carregarAulas();
+}
+
+// ── GRID DE SIMULADORES (no form de cadastro) ──
+let simSelecionado = '';
+function renderSimsGrid() {
+  const grid = document.getElementById('sims-grid-cadastro');
+  if (!grid) return;
+  grid.innerHTML = `
+    <div class="sim-option sem-sim" onclick="selecionarSim('','')">
+      <span>—</span> Nenhum
+    </div>
+    ${SIMULADORES.map(s => `
+      <div class="sim-option" id="sim-opt-${s.id}" onclick="selecionarSim('${s.arquivo}','${s.id}')">
+        <span style="font-size:16px;">${s.icone}</span> ${s.nome}
+      </div>
+    `).join('')}
+  `;
+}
+function selecionarSim(arquivo, id) {
+  simSelecionado = arquivo;
+  document.getElementById('link-simulador').value = arquivo;
+  document.querySelectorAll('.sim-option').forEach(el => el.classList.remove('selecionada'));
+  if (id) document.getElementById('sim-opt-'+id)?.classList.add('selecionada');
+  const sim = SIMULADORES.find(s=>s.id===id);
+  document.getElementById('sim-selecionada-display').textContent = sim
+    ? `✅ Selecionado: ${sim.nome}`
+    : 'Nenhum simulador selecionado';
+}
+function renderSimsConfig() {
+  const div = document.getElementById('lista-simuladores-config');
+  if (!div) return;
+  div.innerHTML = SIMULADORES.map(s=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">
+      <span style="font-size:18px;">${s.icone}</span>
+      <div style="flex:1;">
+        <div style="font-weight:600;font-size:.9rem;">${s.nome}</div>
+        <div style="font-size:.75rem;color:var(--muted);font-family:monospace;">${s.arquivo}</div>
+      </div>
+      <a href="${s.arquivo}" target="_blank" style="font-size:.78rem;color:var(--azul);text-decoration:none;padding:4px 10px;border:1px solid var(--border);border-radius:6px;">Abrir ↗</a>
+    </div>
+  `).join('');
+}
+
+// ── SALVAR AULA ──
+async function salvarAula() {
+  const curso  = document.getElementById('sel-curso').value;
+  const titulo = document.getElementById('titulo-aula').value.trim();
+  const link   = document.getElementById('link-drive').value.trim();
+  if (!curso)  { toast('Selecione o curso.','av'); return; }
+  if (!titulo) { toast('Informe o título da aula.','av'); return; }
+  if (!link)   { toast('Cole o link do Google Drive.','av'); return; }
+
+  const btn = document.getElementById('btn-salvar');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Salvando...';
+  try {
+    const res = await fetch(getApiUrl(), { method:'POST', body: JSON.stringify({
+      tipo:'SALVAR_AULA', curso,
+      numero:  document.getElementById('num-aula').value || '',
+      titulo,
+      descricao:       document.getElementById('desc-aula').value.trim(),
+      link_drive:      link,
+      link_simulador:  document.getElementById('link-simulador').value
+    })});
+    const r = await res.json();
+    if (r.status==='ok') { toast('✅ Aula salva!','ok'); limparForm(); }
+    else toast('Erro: '+(r.erro||''),'err');
+  } catch(e) { toast('Erro de conexão: '+e.message,'err'); }
+  finally { btn.disabled=false; btn.innerHTML='💾 Salvar Aula'; }
+}
+
+function limparForm() {
+  ['num-aula','titulo-aula','desc-aula','link-drive'].forEach(id => {
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  selecionarSim('','');
+}
+
+// ── CARREGAR AULAS ──
+let todasAulas = [];
+async function carregarAulas() {
+  const lista = document.getElementById('lista-aulas');
+  lista.innerHTML='<p><span class="spin" style="border-top-color:var(--azul);"></span> Carregando...</p>';
+  try {
+    const res = await fetch(getApiUrl()+'?tipo=LISTAR_AULAS');
+    todasAulas = await res.json();
+    if (!Array.isArray(todasAulas)||!todasAulas.length) {
+      lista.innerHTML='<p style="color:var(--muted);text-align:center;">Nenhuma aula cadastrada.</p>';
+      document.getElementById('stat-total').textContent='0';
+      document.getElementById('stat-sims').textContent='0';
+      return;
+    }
+    document.getElementById('stat-total').textContent = todasAulas.length;
+    document.getElementById('stat-sims').textContent  = todasAulas.filter(a=>a.link_simulador).length;
+    filtrarAulas();
+  } catch(e) { lista.innerHTML=`<p style="color:var(--vermelho);">Erro: ${e.message}</p>`; }
+}
+
+function filtrarAulas() {
+  const curso = document.getElementById('filtro-curso').value;
+  const filtradas = curso ? todasAulas.filter(a=>a.curso===curso) : todasAulas;
+  renderListaAulas(filtradas);
+}
+
+function renderListaAulas(aulas) {
+  const lista = document.getElementById('lista-aulas');
+  if (!aulas.length) { lista.innerHTML='<p style="color:var(--muted);text-align:center;">Nenhuma aula encontrada.</p>'; return; }
+  const NOMES = {"instalacoes-eletricas":"Inst. Elétricas","automacao-industrial":"Automação","eletronica":"Eletrônica","redes-computadores":"Redes","ciber-sistemas":"Ciber Sistemas"};
+  lista.innerHTML = aulas.map((a,i)=>{
+    const sim = SIMULADORES.find(s=>s.arquivo===a.link_simulador);
+    return `
+    <div class="aula-item">
+      <div class="aula-num-badge">${a.numero||i+1}</div>
+      <div class="aula-body">
+        <div class="aula-titulo-lista">${a.titulo||'—'}</div>
+        <div class="aula-meta">
+          <span>${NOMES[a.curso]||a.curso||'—'}</span>
+          ${sim?`<span class="aula-sim-badge">⚡ ${sim.nome}</span>`:''}
+          ${a.link_drive?`<a href="${a.link_drive}" target="_blank" style="color:var(--azul);font-size:.72rem;">ver slides ↗</a>`:''}
+        </div>
+      </div>
+      <div class="aula-actions">
+        <button class="btn-sm btn-del" onclick="excluirAula(${todasAulas.indexOf(a)})">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function excluirAula(idx) {
+  if (!confirm('Excluir esta aula?')) return;
+  try {
+    const res = await fetch(getApiUrl(),{method:'POST',body:JSON.stringify({tipo:'EXCLUIR_AULA',indice:idx})});
+    const r = await res.json();
+    if (r.status==='ok') { toast('Aula excluída.','ok'); carregarAulas(); }
+    else toast('Erro: '+(r.erro||''),'err');
+  } catch(e) { toast('Erro: '+e.message,'err'); }
+}
+
+// ── CONFIG ──
+function salvarConfig() {
+  const url   = document.getElementById('cfg-url').value.trim();
+  const senha = document.getElementById('cfg-senha').value.trim();
+  const cfg   = getCfg();
+  if (url) cfg.apiUrl = url;
+  if (senha && senha.length>=4) cfg.senha = senha;
+  else if (senha) { toast('Senha muito curta.','av'); return; }
+  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+  toast('Configurações salvas!','ok');
+  if (senha) setTimeout(sair, 1500);
+}
+async function testarConexao() {
+  const st = document.getElementById('cfg-status');
+  st.innerHTML = '<span class="spin" style="border-top-color:var(--azul);"></span> Testando...';
+  try {
+    const res = await fetch(getApiUrl()+'?tipo=LISTAR_AULAS');
+    const d   = await res.json();
+    st.innerHTML = `<span style="color:var(--verde);font-weight:600;">✅ Conexão OK! ${Array.isArray(d)?d.length:'?'} aulas encontradas.</span>`;
+  } catch(e) { st.innerHTML=`<span style="color:var(--vermelho);font-weight:600;">❌ Falha: ${e.message}</span>`; }
+}
+
+// ── TOAST ──
+let tT;
+function toast(msg,tipo='ok') {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className=`show ${tipo}`;
+  clearTimeout(tT); tT=setTimeout(()=>el.className=tipo,3200);
+}
+</script>
+</body>
+</html>
