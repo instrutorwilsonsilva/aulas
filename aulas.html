@@ -1,1 +1,374 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Aulas — Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{ --azul:#004aad; --azul-e:#00317a; --verde:#00b86b; --sidebar-w:220px; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ font-family:'Barlow',sans-serif; background:#f0f4fb; display:flex; min-height:100vh; }
+
+/* SIDEBAR */
+#sidebar{
+  width:var(--sidebar-w); background:var(--azul); color:white;
+  position:fixed; top:0; left:0; height:100vh; overflow-y:auto;
+  display:flex; flex-direction:column; z-index:200;
+  box-shadow:4px 0 24px rgba(0,0,0,0.2);
+}
+.sb-header{ padding:18px 14px 14px; border-bottom:1px solid rgba(255,255,255,0.1); }
+.sb-logo{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.sb-badge{
+  width:34px; height:34px; background:rgba(255,255,255,0.15); border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:1rem;
+}
+.sb-txt{ font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1rem; letter-spacing:2px; line-height:1; }
+.sb-txt small{ display:block; font-size:0.6rem; font-weight:400; opacity:0.5; letter-spacing:1px; }
+.sb-curso{ font-size:0.72rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; opacity:0.7; background:rgba(255,255,255,0.08); padding:5px 8px; border-radius:6px; line-height:1.3; }
+.sb-section-lbl{ padding:12px 14px 6px; font-size:0.65rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; opacity:0.4; }
+
+/* Índice de aulas na sidebar */
+.sb-aula-btn{
+  display:flex; align-items:center; gap:8px;
+  padding:8px 14px; font-size:0.78rem; color:rgba(255,255,255,0.7);
+  cursor:pointer; border:none; background:none; text-align:left; width:100%;
+  border-left:2px solid transparent; transition:all 0.2s;
+}
+.sb-aula-btn:hover{ background:rgba(255,255,255,0.08); color:white; }
+.sb-aula-btn.ativa{ background:rgba(255,255,255,0.12); color:white; border-left-color:var(--verde); }
+.sb-aula-num{
+  background:rgba(255,255,255,0.15); color:white;
+  font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.72rem;
+  width:22px; height:22px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.sb-aula-btn.ativa .sb-aula-num{ background:var(--verde); }
+
+.sb-bottom{
+  margin-top:auto; padding:14px;
+  border-top:1px solid rgba(255,255,255,0.1);
+}
+.sb-voltar{
+  display:block; text-align:center; padding:8px;
+  background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15);
+  border-radius:8px; color:rgba(255,255,255,0.6); text-decoration:none;
+  font-size:0.75rem; font-weight:600; letter-spacing:1px; transition:all 0.2s;
+}
+.sb-voltar:hover{ background:rgba(255,255,255,0.15); color:white; }
+
+/* CONTEÚDO */
+#conteudo{ margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; min-height:100vh; }
+
+/* TOPBAR */
+#topbar{
+  background:white; border-bottom:1px solid #e2e8f4;
+  padding:0 28px; height:56px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 2px 10px rgba(0,0,0,0.05);
+}
+.topbar-titulo{ font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.1rem; color:var(--azul); letter-spacing:0.5px; }
+.topbar-aula-badge{
+  background:#eef4ff; color:var(--azul); border:1px solid #c7d7f5;
+  padding:4px 12px; border-radius:20px; font-size:0.78rem; font-weight:600;
+}
+
+/* ÁREA PRINCIPAL */
+#area-principal{ flex:1; padding:24px 28px 60px; }
+
+/* LOADING */
+#loading-area{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh; color:#5a6a8a; }
+.spinner{ width:40px; height:40px; border:3px solid #e2e8f4; border-top-color:var(--azul); border-radius:50%; animation:spin .7s linear infinite; margin-bottom:16px; }
+@keyframes spin{ to{transform:rotate(360deg)} }
+
+#erro-area{ text-align:center; padding:40px; color:#c0392b; background:#fff5f5; border-radius:12px; border:1px solid #fecaca; display:none; }
+
+/* CARD DA AULA */
+.aula-card{
+  background:white; border-radius:14px; border:1px solid #e2e8f4;
+  padding:0; margin-bottom:20px; overflow:hidden;
+  box-shadow:0 1px 4px rgba(0,0,0,0.04);
+  display:none;
+}
+.aula-card.ativa{ display:block; }
+
+.aula-card-header{
+  padding:20px 24px 16px;
+  border-bottom:1px solid #e2e8f4;
+  display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+  flex-wrap:wrap;
+}
+.aula-titulo-area{ flex:1; }
+.aula-num-badge{
+  background:var(--azul); color:white;
+  font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.8rem;
+  padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:6px;
+}
+.aula-titulo{
+  font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.4rem;
+  color:#1a2340; letter-spacing:0.3px;
+}
+.aula-desc{ font-size:0.85rem; color:#5a6a8a; margin-top:4px; line-height:1.5; }
+.aula-acoes{ display:flex; gap:10px; flex-wrap:wrap; align-items:flex-start; }
+
+/* BOTÕES DE AÇÃO */
+.btn-acao{
+  padding:9px 18px; border:none; border-radius:9px;
+  font-family:'Barlow',sans-serif; font-weight:600; font-size:0.85rem;
+  cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:7px;
+  text-decoration:none; white-space:nowrap;
+}
+.btn-slides{ background:var(--azul); color:white; box-shadow:0 3px 10px rgba(0,74,173,0.25); }
+.btn-slides:hover{ background:var(--azul-e); transform:translateY(-1px); }
+.btn-simulador{ background:#e8f8f1; color:#0f6e56; border:1px solid #a5d6be; }
+.btn-simulador:hover{ background:#d0f0e4; }
+.btn-fullscreen{ background:#f0f4fb; color:#5a6a8a; border:1px solid #d0daf0; }
+.btn-fullscreen:hover{ background:#e2e8f4; }
+
+/* VISUALIZADOR DE SLIDES */
+.viewer-wrap{
+  padding:0; background:#1a1a2e;
+  position:relative;
+}
+.viewer-toolbar{
+  padding:10px 20px; background:#1a1a2e;
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
+}
+.viewer-info{ font-size:0.78rem; color:rgba(255,255,255,0.4); font-family:'Barlow Condensed',sans-serif; letter-spacing:1px; }
+.viewer-iframe{
+  width:100%; border:none; display:block;
+  height:520px; background:#1a1a2e;
+}
+
+/* NENHUMA AULA */
+#sem-aulas{ text-align:center; padding:60px 20px; color:#5a6a8a; display:none; }
+#sem-aulas h3{ font-family:'Barlow Condensed',sans-serif; font-size:1.2rem; color:#1a2340; margin-bottom:8px; }
+
+/* RESPONSIVO */
+@media(max-width:700px){
+  #sidebar{ width:160px; } :root{ --sidebar-w:160px; }
+  #area-principal{ padding:16px 14px 60px; }
+  #topbar{ padding:0 14px; }
+  .viewer-iframe{ height:280px; }
+}
+@media(max-width:480px){
+  #sidebar{ width:0; overflow:hidden; } :root{ --sidebar-w:0px; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sb-header">
+    <div class="sb-logo">
+      <div class="sb-badge">PA</div>
+      <div class="sb-txt">AULAS<small>Portal</small></div>
+    </div>
+    <div class="sb-curso" id="sb-curso-nome">Carregando...</div>
+  </div>
+  <div class="sb-section-lbl">Aulas</div>
+  <div id="sb-lista"></div>
+  <div class="sb-bottom">
+    <a href="index.html" class="sb-voltar">← Voltar aos cursos</a>
+  </div>
+</div>
+
+<!-- CONTEÚDO -->
+<div id="conteudo">
+
+  <div id="topbar">
+    <span class="topbar-titulo" id="topbar-titulo">Carregando...</span>
+    <span class="topbar-aula-badge" id="topbar-badge"></span>
+  </div>
+
+  <div id="area-principal">
+
+    <div id="loading-area">
+      <div class="spinner"></div>
+      <p>Carregando aulas...</p>
+    </div>
+
+    <div id="erro-area">
+      <h3>⚠️ Não foi possível carregar as aulas</h3>
+      <p id="erro-msg" style="margin:10px 0 16px;"></p>
+      <button onclick="carregarAulas()" style="padding:9px 22px;background:var(--azul);color:white;border:none;border-radius:8px;cursor:pointer;font-family:'Barlow',sans-serif;font-weight:600;">Tentar novamente</button>
+    </div>
+
+    <div id="cards-aulas"></div>
+    <div id="sem-aulas">
+      <h3>Nenhuma aula cadastrada ainda</h3>
+      <p>Acesse o painel para adicionar as primeiras aulas deste curso.</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/SEU_APPS_SCRIPT_URL_AQUI/exec";
+
+const params = new URLSearchParams(location.search);
+const CURSO_ID = params.get('curso') || '';
+
+const NOMES_CURSOS = {
+  "instalacoes-eletricas": "Instalações Elétricas",
+  "automacao-industrial":  "Automação Industrial",
+  "eletronica":            "Eletrônica",
+  "redes-computadores":    "Redes de Computadores",
+  "ciber-sistemas":        "Ciber Sistemas"
+};
+const CURSO_NOME = NOMES_CURSOS[CURSO_ID] || CURSO_ID;
+
+let aulasCarregadas = [];
+let aulaAtiva = 0;
+
+window.addEventListener('DOMContentLoaded', () => {
+  document.title = `${CURSO_NOME} — Aulas`;
+  document.getElementById('sb-curso-nome').textContent = CURSO_NOME;
+  document.getElementById('topbar-titulo').textContent = CURSO_NOME;
+  carregarAulas();
+});
+
+async function carregarAulas() {
+  document.getElementById('loading-area').style.display = 'flex';
+  document.getElementById('erro-area').style.display = 'none';
+  document.getElementById('cards-aulas').innerHTML = '';
+  document.getElementById('sem-aulas').style.display = 'none';
+
+  try {
+    const res = await fetch(`${API_URL}?tipo=LISTAR_AULAS&curso=${encodeURIComponent(CURSO_ID)}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const aulas = await res.json();
+
+    document.getElementById('loading-area').style.display = 'none';
+
+    if (!Array.isArray(aulas) || aulas.length === 0) {
+      document.getElementById('sem-aulas').style.display = 'block';
+      return;
+    }
+
+    aulasCarregadas = aulas;
+    renderAulas(aulas);
+    ativarAula(0);
+
+  } catch(err) {
+    document.getElementById('loading-area').style.display = 'none';
+    document.getElementById('erro-area').style.display = 'block';
+    document.getElementById('erro-msg').textContent = err.message;
+  }
+}
+
+function renderAulas(aulas) {
+  const sbLista = document.getElementById('sb-lista');
+  const cardsDiv = document.getElementById('cards-aulas');
+  sbLista.innerHTML = '';
+  cardsDiv.innerHTML = '';
+
+  aulas.forEach((a, i) => {
+    // Botão sidebar
+    sbLista.innerHTML += `
+      <button class="sb-aula-btn" id="sb-btn-${i}" onclick="ativarAula(${i})">
+        <span class="sb-aula-num">${a.numero || i+1}</span>
+        <span style="line-height:1.3;">${a.titulo}</span>
+      </button>`;
+
+    // Link de visualização do Drive
+    // Converte qualquer link do Drive para o formato de embed
+    const embedUrl = converterLinkDrive(a.link_drive);
+    const temSimulador = !!a.link_simulador;
+
+    cardsDiv.innerHTML += `
+      <div class="aula-card" id="aula-card-${i}">
+        <div class="aula-card-header">
+          <div class="aula-titulo-area">
+            <span class="aula-num-badge">Aula ${a.numero || i+1}</span>
+            <div class="aula-titulo">${escHtml(a.titulo)}</div>
+            ${a.descricao ? `<div class="aula-desc">${escHtml(a.descricao)}</div>` : ''}
+          </div>
+          <div class="aula-acoes">
+            ${embedUrl ? `
+              <a class="btn-acao btn-slides" href="${escHtml(a.link_drive)}" target="_blank">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Abrir no Drive
+              </a>
+              <button class="btn-acao btn-fullscreen" onclick="telaCheia(${i})">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+                Tela cheia
+              </button>
+            ` : ''}
+            ${temSimulador ? `
+              <a class="btn-acao btn-simulador" href="${escHtml(a.link_simulador)}" target="_blank">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Abrir Simulador
+              </a>
+            ` : ''}
+          </div>
+        </div>
+        ${embedUrl ? `
+          <div class="viewer-wrap">
+            <div class="viewer-toolbar">
+              <span class="viewer-info">📊 ${escHtml(a.titulo)}</span>
+              <span class="viewer-info" style="opacity:.3;">Visualizador integrado</span>
+            </div>
+            <iframe
+              id="iframe-${i}"
+              class="viewer-iframe"
+              src="${embedUrl}"
+              allowfullscreen
+              loading="lazy">
+            </iframe>
+          </div>
+        ` : `
+          <div style="padding:40px;text-align:center;color:#5a6a8a;background:#f8faff;">
+            <p style="font-size:0.88rem;">Link dos slides não configurado para esta aula.</p>
+          </div>
+        `}
+      </div>`;
+  });
+
+  document.getElementById('topbar-badge').textContent = `${aulas.length} aulas`;
+}
+
+function ativarAula(idx) {
+  aulaAtiva = idx;
+
+  document.querySelectorAll('.aula-card').forEach((c,i) => c.classList.toggle('ativa', i===idx));
+  document.querySelectorAll('.sb-aula-btn').forEach((b,i) => b.classList.toggle('ativa', i===idx));
+
+  const a = aulasCarregadas[idx];
+  if (a) document.getElementById('topbar-titulo').textContent = `${CURSO_NOME} — ${a.titulo}`;
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function telaCheia(idx) {
+  const iframe = document.getElementById('iframe-' + idx);
+  if (!iframe) return;
+  if (iframe.requestFullscreen) iframe.requestFullscreen();
+  else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+}
+
+// Converte links do Google Drive para embed
+function converterLinkDrive(url) {
+  if (!url) return '';
+  // Formato: https://drive.google.com/file/d/FILE_ID/view
+  // Embed:   https://drive.google.com/file/d/FILE_ID/preview
+  const m = url.match(/\/file\/d\/([^/]+)/);
+  if (m) return `https://drive.google.com/file/d/${m[1]}/preview`;
+  // Se já for link de apresentação do Google Slides
+  const ms = url.match(/presentation\/d\/([^/]+)/);
+  if (ms) return `https://docs.google.com/presentation/d/${ms[1]}/embed?start=false&loop=false&delayms=3000`;
+  // Retorna o próprio link se não reconhecer o formato
+  return url;
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
