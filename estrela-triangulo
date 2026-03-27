@@ -1,1 +1,351 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Partida Estrela-Triângulo — Simulador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{ --azul:#004aad; --verde:#00b86b; --vermelho:#e53935; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ font-family:'Barlow',sans-serif; background:#f0f4fb; min-height:100vh; }
+
+.header{
+  background:var(--azul); color:white; padding:0 24px; height:52px;
+  display:flex; align-items:center; justify-content:space-between;
+  box-shadow:0 3px 12px rgba(0,0,0,.2);
+}
+.header-left{ display:flex; align-items:center; gap:10px; }
+.header-badge{
+  background:rgba(255,255,255,.15); width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; font-size:1rem;
+}
+.header-txt{ font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.05rem; letter-spacing:1px; }
+.header-txt small{ font-size:.65rem; opacity:.6; font-weight:400; display:block; letter-spacing:1px; }
+.btn-voltar{
+  padding:5px 12px; background:rgba(255,255,255,.1); border:none; color:rgba(255,255,255,.8);
+  border-radius:6px; cursor:pointer; font-family:'Barlow',sans-serif; font-size:.78rem; font-weight:600;
+  text-decoration:none; transition:background .2s;
+}
+.btn-voltar:hover{ background:rgba(255,255,255,.2); color:white; }
+
+.main{ max-width:900px; margin:0 auto; padding:24px 20px 60px; }
+
+.ctrl-card{
+  background:white; border-radius:12px; border:1px solid #e2e8f4;
+  padding:18px 22px; margin-bottom:18px;
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+}
+.btn-sim{
+  padding:9px 20px; border-radius:9px; border:1.5px solid #d0daf0;
+  background:white; color:#1a2340; cursor:pointer; font-family:'Barlow',sans-serif;
+  font-weight:600; font-size:.88rem; transition:all .2s; display:flex; align-items:center; gap:7px;
+}
+.btn-sim:hover:not(:disabled){ background:#f0f5ff; border-color:var(--azul); }
+.btn-sim.active{ background:var(--azul); border-color:var(--azul); color:white; }
+.btn-sim.danger{ background:var(--vermelho); border-color:var(--vermelho); color:white; }
+.btn-sim:disabled{ opacity:.4; cursor:not-allowed; }
+.estado-badge{
+  padding:5px 14px; border-radius:20px; font-size:.8rem; font-weight:600;
+  background:#f0f4fb; color:#5a6a8a; transition:all .3s;
+}
+.estado-badge.estrela{ background:#E6F1FB; color:#0C447C; }
+.estado-badge.triangulo{ background:#EAF3DE; color:#27500A; }
+
+.svg-card{
+  background:white; border-radius:12px; border:1px solid #e2e8f4;
+  padding:16px; margin-bottom:18px; box-shadow:0 1px 4px rgba(0,0,0,.04);
+  overflow:hidden;
+}
+
+.info-card{
+  background:white; border-radius:12px; border:1px solid #e2e8f4;
+  padding:18px 22px; box-shadow:0 1px 4px rgba(0,0,0,.04);
+}
+.info-card h3{ font-family:'Barlow Condensed',sans-serif; font-size:1rem; font-weight:700; color:var(--azul); margin-bottom:8px; letter-spacing:.5px; }
+.info-card p{ font-size:.88rem; color:#5a6a8a; line-height:1.65; }
+.info-card strong{ color:#1a2340; font-weight:600; }
+
+.metricas{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:10px; margin-top:14px;
+}
+.metrica{
+  background:#f0f4fb; border-radius:8px; padding:12px;
+  text-align:center; border:1px solid #e2e8f4;
+}
+.metrica-num{
+  font-family:'Barlow Condensed',sans-serif; font-size:1.5rem; font-weight:800;
+  color:var(--azul); line-height:1;
+}
+.metrica-lbl{ font-size:.72rem; color:#5a6a8a; margin-top:3px; }
+
+@keyframes flow{ 0%{stroke-dashoffset:24} 100%{stroke-dashoffset:0} }
+.flowing{ stroke-dasharray:8 4; animation:flow .5s linear infinite; }
+
+@media(max-width:500px){
+  .ctrl-card{ padding:14px; }
+  .metricas{ grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="header-badge">⚙️</div>
+    <div class="header-txt">Partida Estrela-Triângulo<small>Simulador Interativo</small></div>
+  </div>
+  <a href="javascript:history.back()" class="btn-voltar">← Voltar</a>
+</div>
+
+<div class="main">
+
+  <div class="ctrl-card">
+    <button class="btn-sim" id="btn-liga" onclick="ligar()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18.36 6.64a9 9 0 11-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+      Ligar — Estrela (Y)
+    </button>
+    <button class="btn-sim" id="btn-tri" onclick="trocarTriangulo()" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Trocar para Triângulo (△)
+    </button>
+    <button class="btn-sim danger" id="btn-des" onclick="desligar()" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      Desligar
+    </button>
+    <span class="estado-badge" id="estado-badge">Desligado</span>
+  </div>
+
+  <div class="svg-card">
+    <svg id="svg-main" width="100%" viewBox="0 0 660 420">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+      </defs>
+
+      <!-- FONTE 3F -->
+      <rect x="20" y="30" width="60" height="36" rx="4" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+      <text x="50" y="52" text-anchor="middle" font-size="11" fill="#0C447C" font-weight="600" font-family="Barlow, sans-serif">Rede 3F</text>
+      <line x1="30" y1="66" x2="30" y2="100" stroke="#378ADD" stroke-width="2"/>
+      <line x1="50" y1="66" x2="50" y2="100" stroke="#378ADD" stroke-width="2"/>
+      <line x1="70" y1="66" x2="70" y2="100" stroke="#378ADD" stroke-width="2"/>
+      <text x="30" y="115" text-anchor="middle" font-size="10" fill="#185FA5" font-family="Barlow, sans-serif">L1</text>
+      <text x="50" y="115" text-anchor="middle" font-size="10" fill="#185FA5" font-family="Barlow, sans-serif">L2</text>
+      <text x="70" y="115" text-anchor="middle" font-size="10" fill="#185FA5" font-family="Barlow, sans-serif">L3</text>
+
+      <!-- DISJUNTOR -->
+      <rect x="20" y="120" width="60" height="28" rx="4" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+      <text x="50" y="138" text-anchor="middle" font-size="11" fill="#444441" font-weight="600" font-family="Barlow, sans-serif">QM</text>
+      <line x1="30" y1="148" x2="30" y2="170" stroke="#888780" stroke-width="1.5"/>
+      <line x1="50" y1="148" x2="50" y2="170" stroke="#888780" stroke-width="1.5"/>
+      <line x1="70" y1="148" x2="70" y2="170" stroke="#888780" stroke-width="1.5"/>
+
+      <!-- KM1 -->
+      <rect x="20" y="175" width="60" height="36" rx="4" id="rect-km1" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+      <text x="50" y="190" text-anchor="middle" font-size="10" fill="#444441" font-weight="600" font-family="Barlow, sans-serif" id="lkm1a">KM1</text>
+      <text x="50" y="203" text-anchor="middle" font-size="9" fill="#888780" font-family="Barlow, sans-serif" id="lkm1b">aberto</text>
+      <line x1="30" y1="211" x2="30" y2="240" stroke="#888780" stroke-width="1.5" id="w-km1-1"/>
+      <line x1="50" y1="211" x2="50" y2="240" stroke="#888780" stroke-width="1.5" id="w-km1-2"/>
+      <line x1="70" y1="211" x2="70" y2="240" stroke="#888780" stroke-width="1.5" id="w-km1-3"/>
+
+      <!-- RELÉ TÉRMICO -->
+      <rect x="20" y="245" width="60" height="28" rx="4" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
+      <text x="50" y="263" text-anchor="middle" font-size="10" fill="#633806" font-weight="600" font-family="Barlow, sans-serif">RT</text>
+      <line x1="30" y1="273" x2="30" y2="300" stroke="#888780" stroke-width="1.5"/>
+      <line x1="50" y1="273" x2="50" y2="300" stroke="#888780" stroke-width="1.5"/>
+      <line x1="70" y1="273" x2="70" y2="300" stroke="#888780" stroke-width="1.5"/>
+
+      <!-- MOTOR -->
+      <ellipse cx="340" cy="310" rx="54" ry="54" id="motor-body" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+      <ellipse cx="340" cy="310" rx="38" ry="38" fill="white" stroke="#B4B2A9" stroke-width="0.5"/>
+      <text x="340" y="305" text-anchor="middle" font-size="14" fill="#444441" font-weight="600" font-family="Barlow Condensed, sans-serif">M</text>
+      <text x="340" y="322" text-anchor="middle" font-size="10" fill="#888780" font-family="Barlow, sans-serif" id="motor-sub">parado</text>
+      <line x1="394" y1="310" x2="436" y2="310" stroke="#888780" stroke-width="3" stroke-linecap="round"/>
+      <g id="ventilador" transform-origin="340 310">
+        <line x1="340" y1="272" x2="340" y2="290" stroke="#B4B2A9" stroke-width="2" stroke-linecap="round"/>
+        <line x1="378" y1="310" x2="360" y2="310" stroke="#B4B2A9" stroke-width="2" stroke-linecap="round"/>
+        <line x1="340" y1="348" x2="340" y2="330" stroke="#B4B2A9" stroke-width="2" stroke-linecap="round"/>
+        <line x1="302" y1="310" x2="320" y2="310" stroke="#B4B2A9" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <text x="286" y="262" text-anchor="middle" font-size="9" fill="#5F5E5A" font-family="Barlow, sans-serif">U1</text>
+      <text x="340" y="258" text-anchor="middle" font-size="9" fill="#5F5E5A" font-family="Barlow, sans-serif">V1</text>
+      <text x="394" y="262" text-anchor="middle" font-size="9" fill="#5F5E5A" font-family="Barlow, sans-serif">W1</text>
+      <text x="286" y="372" text-anchor="middle" font-size="9" fill="#5F5E5A" font-family="Barlow, sans-serif">U2</text>
+      <text x="340" y="376" text-anchor="middle" font-size="9" fill="#5F5E5A" font-family="Barlow, sans-serif">V2</text>
+      <text x="394" y="372" text-anchor="middle" font-size="9" fill="#5F5E5A" font-family="Barlow, sans-serif">W2</text>
+
+      <!-- Fiação principal → motor -->
+      <line x1="30" y1="300" x2="30" y2="340" stroke="#888780" stroke-width="1.5"/>
+      <line x1="50" y1="300" x2="50" y2="340" stroke="#888780" stroke-width="1.5"/>
+      <line x1="70" y1="300" x2="70" y2="340" stroke="#888780" stroke-width="1.5"/>
+      <line x1="30" y1="340" x2="286" y2="340" stroke="#888780" stroke-width="1.5" id="w-u1"/>
+      <line x1="50" y1="340" x2="50" y2="370" stroke="#888780" stroke-width="1.5"/>
+      <line x1="50" y1="370" x2="200" y2="370" stroke="#888780" stroke-width="1.5"/>
+      <line x1="200" y1="370" x2="200" y2="310" stroke="#888780" stroke-width="1.5"/>
+      <line x1="200" y1="310" x2="286" y2="310" stroke="#888780" stroke-width="1.5" id="w-v1"/>
+      <line x1="70" y1="300" x2="70" y2="390" stroke="#888780" stroke-width="1.5"/>
+      <line x1="70" y1="390" x2="340" y2="390" stroke="#888780" stroke-width="1.5" id="w-w1h"/>
+      <line x1="340" y1="390" x2="340" y2="365" stroke="#888780" stroke-width="1.5" id="w-w1v"/>
+
+      <!-- KM-Y (Estrela) -->
+      <rect x="480" y="175" width="70" height="36" rx="4" id="rect-kmy" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+      <text x="515" y="190" text-anchor="middle" font-size="10" fill="#444441" font-weight="600" font-family="Barlow, sans-serif" id="lkmya">KM-Y</text>
+      <text x="515" y="203" text-anchor="middle" font-size="9" fill="#888780" font-family="Barlow, sans-serif" id="lkmyb">aberto</text>
+      <line x1="515" y1="211" x2="515" y2="240" stroke="#888780" stroke-width="1.5"/>
+      <line x1="515" y1="240" x2="390" y2="240" stroke="#888780" stroke-width="1.5" id="w-kmy-h"/>
+      <line x1="390" y1="240" x2="390" y2="280" stroke="#888780" stroke-width="1.5" id="w-kmy-u2"/>
+      <line x1="336" y1="240" x2="336" y2="364" stroke="#888780" stroke-width="1.5" id="w-kmy-v2"/>
+      <line x1="285" y1="240" x2="285" y2="357" stroke="#888780" stroke-width="1.5" id="w-kmy-w2"/>
+      <line x1="285" y1="240" x2="390" y2="240" stroke="#888780" stroke-width="1.5"/>
+      <circle cx="390" cy="240" r="3" fill="#888780"/>
+      <circle cx="336" cy="240" r="3" fill="#888780"/>
+      <circle cx="285" cy="240" r="3" fill="#888780"/>
+
+      <!-- KM-△ (Triângulo) -->
+      <rect x="480" y="280" width="70" height="36" rx="4" id="rect-kmd" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+      <text x="515" y="295" text-anchor="middle" font-size="10" fill="#444441" font-weight="600" font-family="Barlow, sans-serif" id="lkmda">KM-△</text>
+      <text x="515" y="308" text-anchor="middle" font-size="9" fill="#888780" font-family="Barlow, sans-serif" id="lkmdb">aberto</text>
+      <line x1="515" y1="316" x2="515" y2="380" stroke="#888780" stroke-width="1.5" id="w-kmd-v"/>
+      <line x1="515" y1="380" x2="286" y2="380" stroke="#888780" stroke-width="1.5" id="w-kmd-h"/>
+      <line x1="286" y1="380" x2="286" y2="360" stroke="#888780" stroke-width="1.5" id="w-kmd-u2"/>
+
+      <!-- Tensão / Corrente display -->
+      <rect x="440" y="30" width="200" height="60" rx="6" fill="#f8faff" stroke="#c7d7f5" stroke-width="0.5"/>
+      <text x="540" y="52" text-anchor="middle" font-size="12" fill="#5a6a8a" font-family="Barlow, sans-serif" id="lbl-corrente">Corrente: —</text>
+      <text x="540" y="72" text-anchor="middle" font-size="11" fill="#5a6a8a" font-family="Barlow, sans-serif" id="lbl-tensao">Tensão motor: —</text>
+
+      <!-- Legenda -->
+      <rect x="100" y="30" width="160" height="90" rx="4" fill="#f8faff" stroke="#e2e8f4" stroke-width="0.5"/>
+      <text x="180" y="50" text-anchor="middle" font-size="11" fill="#5a6a8a" font-weight="600" font-family="Barlow, sans-serif">Legenda</text>
+      <line x1="112" y1="64" x2="132" y2="64" stroke="#888780" stroke-width="2"/>
+      <text x="138" y="68" font-size="10" fill="#5a6a8a" font-family="Barlow, sans-serif">Sem corrente</text>
+      <line x1="112" y1="80" x2="132" y2="80" stroke="#378ADD" stroke-width="2" stroke-dasharray="6 3"/>
+      <text x="138" y="84" font-size="10" fill="#5a6a8a" font-family="Barlow, sans-serif">Estrela (Y)</text>
+      <line x1="112" y1="96" x2="132" y2="96" stroke="#1D9E75" stroke-width="2" stroke-dasharray="6 3"/>
+      <text x="138" y="100" font-size="10" fill="#5a6a8a" font-family="Barlow, sans-serif">Triângulo (△)</text>
+    </svg>
+  </div>
+
+  <div class="info-card">
+    <h3 id="info-titulo">Estado inicial</h3>
+    <p id="info-texto">Todos os contatores abertos. Motor parado. Clique em <strong>Ligar</strong> para iniciar a partida estrela.</p>
+    <div class="metricas">
+      <div class="metrica"><div class="metrica-num" id="met-corrente">—</div><div class="metrica-lbl">% da corrente nominal</div></div>
+      <div class="metrica"><div class="metrica-num" id="met-tensao">—</div><div class="metrica-lbl">Tensão no enrolamento</div></div>
+      <div class="metrica"><div class="metrica-num" id="met-torque">—</div><div class="metrica-lbl">% do torque nominal</div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const C_OFF='#888780', C_EST='#378ADD', C_TRI='#1D9E75';
+let ang=0, afh=null;
+
+function setWires(ids,cor,flow){
+  ids.forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    el.setAttribute('stroke',cor);
+    el.setAttribute('stroke-width',flow?'2.5':'1.5');
+    flow?el.classList.add('flowing'):el.classList.remove('flowing');
+  });
+}
+function setContator(rId,laId,lbId,fechado,cor){
+  const r=document.getElementById(rId),la=document.getElementById(laId),lb=document.getElementById(lbId);
+  if(fechado){
+    r.setAttribute('fill',cor===C_EST?'#E6F1FB':'#EAF3DE');
+    r.setAttribute('stroke',cor); r.setAttribute('stroke-width','1.5');
+    lb.setAttribute('fill',cor); lb.textContent='fechado';
+  } else {
+    r.setAttribute('fill','#F1EFE8'); r.setAttribute('stroke','#888780'); r.setAttribute('stroke-width','0.5');
+    lb.setAttribute('fill','#888780'); lb.textContent='aberto';
+  }
+}
+function spin(ativo,vel){
+  if(afh){cancelAnimationFrame(afh);afh=null;}
+  if(!ativo)return;
+  const v=document.getElementById('ventilador');
+  (function f(){ang=(ang+vel)%360;v.setAttribute('transform',`rotate(${ang},340,310)`);afh=requestAnimationFrame(f);})();
+}
+function setBadge(txt,cls){
+  const b=document.getElementById('estado-badge');
+  b.textContent=txt; b.className='estado-badge '+cls;
+}
+function setMetricas(cor,ten,torq){
+  document.getElementById('met-corrente').textContent=cor;
+  document.getElementById('met-tensao').textContent=ten;
+  document.getElementById('met-torque').textContent=torq;
+}
+
+function ligar(){
+  setWires(['w-km1-1','w-km1-2','w-km1-3','w-u1','w-v1','w-w1h','w-w1v'],C_EST,true);
+  setWires(['w-kmy-h','w-kmy-u2','w-kmy-v2','w-kmy-w2'],C_EST,true);
+  setWires(['w-kmd-v','w-kmd-h','w-kmd-u2'],C_OFF,false);
+  setContator('rect-km1','lkm1a','lkm1b',true,C_EST);
+  setContator('rect-kmy','lkmya','lkmyb',true,C_EST);
+  setContator('rect-kmd','lkmda','lkmdb',false,C_OFF);
+  document.getElementById('motor-body').setAttribute('fill','#E6F1FB');
+  document.getElementById('motor-body').setAttribute('stroke',C_EST);
+  document.getElementById('motor-sub').textContent='partindo (Y)';
+  document.getElementById('motor-sub').setAttribute('fill','#185FA5');
+  document.getElementById('lbl-corrente').textContent='Corrente: ~33% In';
+  document.getElementById('lbl-tensao').textContent='Tensão: 127V (Vrede/√3)';
+  setBadge('Partida Estrela (Y)','estrela');
+  setMetricas('33%','127 V','33%');
+  document.getElementById('info-titulo').textContent='Partida Estrela (Y) — em andamento';
+  document.getElementById('info-texto').innerHTML='KM1 + KM-Y fechados. Enrolamentos em estrela — cada um recebe <strong>Vrede/√3 ≈ 127V</strong>. Corrente de partida reduzida a ~33% da nominal. Torque também reduzido (1/3). Aguarde ~80% da velocidade para comutar para triângulo.';
+  document.getElementById('btn-liga').disabled=true;
+  document.getElementById('btn-tri').disabled=false;
+  document.getElementById('btn-des').disabled=false;
+  spin(true,1.8);
+}
+function trocarTriangulo(){
+  setWires(['w-kmy-h','w-kmy-u2','w-kmy-v2','w-kmy-w2'],C_OFF,false);
+  setWires(['w-kmd-v','w-kmd-h','w-kmd-u2'],C_TRI,true);
+  setWires(['w-km1-1','w-km1-2','w-km1-3','w-u1','w-v1','w-w1h','w-w1v'],C_TRI,true);
+  setContator('rect-kmy','lkmya','lkmyb',false,C_OFF);
+  setContator('rect-kmd','lkmda','lkmdb',true,C_TRI);
+  setContator('rect-km1','lkm1a','lkm1b',true,C_TRI);
+  document.getElementById('motor-body').setAttribute('fill','#EAF3DE');
+  document.getElementById('motor-body').setAttribute('stroke',C_TRI);
+  document.getElementById('motor-sub').textContent='operando (△)';
+  document.getElementById('motor-sub').setAttribute('fill','#1D9E75');
+  document.getElementById('lbl-corrente').textContent='Corrente: 100% In';
+  document.getElementById('lbl-tensao').textContent='Tensão: 220V (plena)';
+  setBadge('Operação Triângulo (△)','triangulo');
+  setMetricas('100%','220 V','100%');
+  document.getElementById('info-titulo').textContent='Operação Triângulo (△) — plena carga';
+  document.getElementById('info-texto').innerHTML='KM1 + KM-△ fechados. Enrolamentos em triângulo — cada um recebe a tensão total da rede (<strong>220V</strong>). Motor operando em plena capacidade com torque e corrente nominais.';
+  document.getElementById('btn-tri').disabled=true;
+  spin(true,4);
+}
+function desligar(){
+  [['w-km1-1','w-km1-2','w-km1-3','w-u1','w-v1','w-w1h','w-w1v'],
+   ['w-kmy-h','w-kmy-u2','w-kmy-v2','w-kmy-w2'],
+   ['w-kmd-v','w-kmd-h','w-kmd-u2']].forEach(ids=>setWires(ids,C_OFF,false));
+  setContator('rect-km1','lkm1a','lkm1b',false,C_OFF);
+  setContator('rect-kmy','lkmya','lkmyb',false,C_OFF);
+  setContator('rect-kmd','lkmda','lkmdb',false,C_OFF);
+  document.getElementById('motor-body').setAttribute('fill','#F1EFE8');
+  document.getElementById('motor-body').setAttribute('stroke','#888780');
+  document.getElementById('motor-sub').textContent='parado';
+  document.getElementById('motor-sub').setAttribute('fill','#888780');
+  document.getElementById('lbl-corrente').textContent='Corrente: —';
+  document.getElementById('lbl-tensao').textContent='Tensão motor: —';
+  setBadge('Desligado','');
+  setMetricas('—','—','—');
+  document.getElementById('info-titulo').textContent='Estado inicial';
+  document.getElementById('info-texto').innerHTML='Todos os contatores abertos. Motor parado. Clique em <strong>Ligar</strong> para iniciar a partida estrela.';
+  document.getElementById('btn-liga').disabled=false;
+  document.getElementById('btn-tri').disabled=true;
+  document.getElementById('btn-des').disabled=true;
+  spin(false,0);
+}
+</script>
+</body>
+</html>
