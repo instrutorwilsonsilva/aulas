@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -314,7 +313,7 @@ const AUTH_KEY = 'portalAulasAuth';
 const SENHA_PADRAO = 'aulas2025';
 
 function getCfg()    { try{ return JSON.parse(localStorage.getItem(CFG_KEY))||{}; }catch(e){ return {}; } }
-function getApiUrl() { return getCfg().apiUrl || "https://script.google.com/macros/s/AKfycbwDdc6bmJYcdgzWko3_tFFfentCPB0ahqoaeoqxbrG36iA92X9L3XZWOwoe9Rfn_Q5V/exec"; }
+function getApiUrl() { return getCfg().apiUrl || "https://script.google.com/macros/s/AKfycbzqmEH3Qndg3gCnyAq--ITX4_jMrtEsWELHnkDHTa6ixOfIg3ZuxzwAzOuvuivZLjhZlw/exec"; }
 function getSenha()  { return getCfg().senha || SENHA_PADRAO; }
 
 // ── LOGIN (sessionStorage — expira ao fechar) ──
@@ -405,14 +404,16 @@ async function salvarAula() {
   const btn = document.getElementById('btn-salvar');
   btn.disabled=true; btn.innerHTML='<span class="spin"></span>Salvando...';
   try {
-    const res = await fetch(getApiUrl(), { method:'POST', body: JSON.stringify({
-      tipo:'SALVAR_AULA', curso,
-      numero:  document.getElementById('num-aula').value || '',
+    const params = new URLSearchParams({
+      tipo:           'SALVAR_AULA',
+      curso,
+      numero:         document.getElementById('num-aula').value || '',
       titulo,
-      descricao:       document.getElementById('desc-aula').value.trim(),
-      link_drive:      link,
-      link_simulador:  document.getElementById('link-simulador').value
-    })});
+      descricao:      document.getElementById('desc-aula').value.trim(),
+      link_drive:     link,
+      link_simulador: document.getElementById('link-simulador').value
+    });
+    const res = await fetch(getApiUrl() + '?' + params.toString());
     const r = await res.json();
     if (r.status==='ok') { toast('✅ Aula salva!','ok'); limparForm(); }
     else toast('Erro: '+(r.erro||''),'err');
@@ -480,7 +481,8 @@ function renderListaAulas(aulas) {
 async function excluirAula(idx) {
   if (!confirm('Excluir esta aula?')) return;
   try {
-    const res = await fetch(getApiUrl(),{method:'POST',body:JSON.stringify({tipo:'EXCLUIR_AULA',indice:idx})});
+    const params = new URLSearchParams({ tipo:'EXCLUIR_AULA', indice: idx });
+    const res = await fetch(getApiUrl() + '?' + params.toString());
     const r = await res.json();
     if (r.status==='ok') { toast('Aula excluída.','ok'); carregarAulas(); }
     else toast('Erro: '+(r.erro||''),'err');
