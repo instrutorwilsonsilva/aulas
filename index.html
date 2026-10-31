@@ -1,20 +1,35 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Portal de Aulas</title>
+<title>Prof. Wilson Silva — Aulas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --azul: #004aad; --azul-escuro: #00317a; --azul-brilho: #1a6dd4;
-  --verde: #00b86b; --verde-escuro: #008f52;
+  --azul: #004aad;
+  --azul-escuro: #00317a;
+  --azul-brilho: #1a6dd4;
+  --verde: #00b86b;
+  --verde-escuro: #008f52;
+  --branco: #ffffff;
+  --cinza-claro: #f4f6fa;
+  --cinza-medio: #e2e8f4;
+  --texto: #1a2340;
+  --texto-muted: #5a6a8a;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Barlow', sans-serif; background: #0d1a30; min-height: 100vh; overflow-x: hidden; }
 
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--texto);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── FUNDO ANIMADO ── */
 .bg-mesh {
   position: fixed; inset: 0; z-index: 0;
   background:
@@ -30,14 +45,28 @@ body { font-family: 'Barlow', sans-serif; background: #0d1a30; min-height: 100vh
     linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
   background-size: 40px 40px;
 }
-.page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
 
+/* ── LAYOUT ── */
+.page {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
 header {
   padding: 28px 40px 0;
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   animation: fadeDown 0.6s ease both;
 }
-.logo-marca { display: flex; align-items: center; gap: 14px; }
+.logo-marca {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
 .logo-badge {
   width: 46px; height: 46px;
   background: linear-gradient(135deg, var(--azul-brilho), var(--verde));
@@ -50,49 +79,94 @@ header {
 }
 .logo-texto h1 {
   font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 700; font-size: 1.3rem; color: white; letter-spacing: 3px; line-height: 1;
+  font-weight: 700; font-size: 1.3rem;
+  color: white; letter-spacing: 3px;
+  line-height: 1;
 }
-.logo-texto span { font-size: 0.7rem; color: rgba(255,255,255,0.5); letter-spacing: 2px; text-transform: uppercase; }
-.header-ano { font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; color: rgba(255,255,255,0.4); letter-spacing: 2px; }
+.logo-texto span {
+  font-size: 0.7rem; color: rgba(255,255,255,0.5);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+.header-ano {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem; color: rgba(255,255,255,0.4);
+  letter-spacing: 2px;
+}
 
-.hero { padding: 60px 40px 40px; animation: fadeDown 0.7s ease 0.1s both; }
+/* ── HERO ── */
+.hero {
+  padding: 60px 40px 40px;
+  animation: fadeDown 0.7s ease 0.1s both;
+}
 .hero-tag {
   display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(0,184,107,0.15); border: 1px solid rgba(0,184,107,0.3);
-  border-radius: 100px; padding: 5px 14px; margin-bottom: 20px;
+  background: rgba(0,184,107,0.15);
+  border: 1px solid rgba(0,184,107,0.3);
+  border-radius: 100px;
+  padding: 5px 14px;
+  margin-bottom: 20px;
 }
 .hero-tag-dot {
-  width: 7px; height: 7px; background: var(--verde); border-radius: 50%;
+  width: 7px; height: 7px;
+  background: var(--verde);
+  border-radius: 50%;
   animation: pulse 2s ease infinite;
 }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(0.8)} }
-.hero-tag span { font-size: 0.75rem; font-weight: 600; color: var(--verde); letter-spacing: 1px; text-transform: uppercase; }
+.hero-tag span {
+  font-size: 0.75rem; font-weight: 600;
+  color: var(--verde); letter-spacing: 1px; text-transform: uppercase;
+}
 .hero h2 {
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 800; font-size: clamp(2.4rem, 5vw, 4rem);
-  color: white; line-height: 1.05; letter-spacing: -1px;
+  color: white; line-height: 1.05;
+  letter-spacing: -1px;
 }
 .hero h2 em {
   font-style: normal;
   background: linear-gradient(90deg, #4da6ff, var(--verde));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
-.hero p { margin-top: 14px; font-size: 1rem; color: rgba(255,255,255,0.55); max-width: 500px; line-height: 1.6; font-weight: 300; }
+.hero p {
+  margin-top: 14px;
+  font-size: 1rem; color: rgba(255,255,255,0.55);
+  max-width: 500px; line-height: 1.6; font-weight: 300;
+}
 
-.cursos-section { padding: 0 40px 60px; flex: 1; }
+/* ── GRID DE CURSOS ── */
+.cursos-section {
+  padding: 0 40px 60px;
+  flex: 1;
+}
 .cursos-label {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.75rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.3); margin-bottom: 20px;
+  font-size: 0.75rem; font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 20px;
 }
-.cursos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.cursos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 1080px;
+}
 
+/* ── CARD DE CURSO ── */
 .curso-card {
   position: relative;
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px; padding: 28px; cursor: pointer;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 28px;
+  cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-  text-decoration: none; display: block; overflow: hidden;
+  text-decoration: none;
+  display: block;
+  overflow: hidden;
   animation: fadeUp 0.5s ease both;
 }
 .curso-card:nth-child(1){ animation-delay: 0.15s; }
@@ -101,60 +175,125 @@ header {
 .curso-card:nth-child(4){ animation-delay: 0.36s; }
 .curso-card:nth-child(5){ animation-delay: 0.43s; }
 .curso-card:nth-child(6){ animation-delay: 0.50s; }
+
 .curso-card::before {
-  content: ''; position: absolute; inset: 0;
+  content: '';
+  position: absolute; inset: 0;
   background: linear-gradient(135deg, rgba(0,74,173,0.0) 0%, rgba(0,74,173,0.15) 100%);
-  opacity: 0; transition: opacity 0.3s; border-radius: 16px;
+  opacity: 0; transition: opacity 0.3s;
+  border-radius: 16px;
 }
 .curso-card:hover {
-  border-color: rgba(0,184,107,0.4); transform: translateY(-4px);
+  border-color: rgba(0,184,107,0.4);
+  transform: translateY(-4px);
   box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,184,107,0.2);
   background: rgba(255,255,255,0.07);
 }
 .curso-card:hover::before { opacity: 1; }
+
 .card-brilho {
-  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
 }
+
 .card-icone {
-  width: 48px; height: 48px; border-radius: 12px;
+  width: 48px; height: 48px;
+  border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem; margin-bottom: 18px; position: relative; z-index: 1;
+  font-size: 1.5rem;
+  margin-bottom: 18px;
+  position: relative;
+  z-index: 1;
 }
 .card-nome {
-  font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.35rem;
-  color: white; letter-spacing: 0.5px; line-height: 1.2; position: relative; z-index: 1; margin-bottom: 6px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 1.35rem;
+  color: white; letter-spacing: 0.5px;
+  line-height: 1.2;
+  position: relative; z-index: 1;
+  margin-bottom: 6px;
 }
-.card-desc { font-size: 0.83rem; color: rgba(255,255,255,0.45); line-height: 1.5; font-weight: 300; position: relative; z-index: 1; margin-bottom: 20px; }
-.card-meta { display: flex; align-items: center; gap: 14px; position: relative; z-index: 1; flex-wrap: wrap; }
-.meta-item { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: rgba(255,255,255,0.4); }
+.card-desc {
+  font-size: 0.83rem; color: rgba(255,255,255,0.45);
+  line-height: 1.5; font-weight: 300;
+  position: relative; z-index: 1;
+  margin-bottom: 20px;
+}
+.card-meta {
+  display: flex; align-items: center; gap: 14px;
+  padding-right: 44px;
+  position: relative; z-index: 1;
+  flex-wrap: wrap;
+}
+.meta-item {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.75rem; color: rgba(255,255,255,0.4);
+}
+.meta-item svg { opacity: 0.5; }
+
 .card-seta {
   position: absolute; bottom: 24px; right: 24px;
-  width: 32px; height: 32px; background: rgba(255,255,255,0.06);
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  transition: all 0.3s; z-index: 1;
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s;
+  z-index: 1;
 }
-.curso-card:hover .card-seta { background: var(--verde); transform: translateX(3px); }
+.curso-card:hover .card-seta {
+  background: var(--verde);
+  transform: translateX(3px);
+}
 
-.icone-azul   { background: rgba(0,74,173,0.25); }
-.icone-verde  { background: rgba(0,184,107,0.2); }
-.icone-laranja{ background: rgba(245,130,32,0.2); }
-.icone-roxo   { background: rgba(100,60,200,0.2); }
-.icone-ciano  { background: rgba(0,180,200,0.2); }
-.icone-amarelo{ background: rgba(245,180,0,0.2); }
+/* Cores dos ícones */
+.icone-azul { background: rgba(0,74,173,0.25); }
+.icone-verde { background: rgba(0,184,107,0.2); }
+.icone-laranja { background: rgba(245,130,32,0.2); }
+.icone-roxo { background: rgba(100,60,200,0.2); }
+.icone-vermelho { background: rgba(220,50,50,0.2); }
+.icone-ciano { background: rgba(0,180,200,0.2); }
 
+/* ── FOOTER ── */
 footer {
-  padding: 20px 40px; border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 20px 40px;
+  border-top: 1px solid rgba(255,255,255,0.06);
   display: flex; align-items: center; justify-content: space-between;
   animation: fadeUp 0.5s ease 0.5s both;
 }
-.footer-texto { font-size: 0.75rem; color: rgba(255,255,255,0.2); letter-spacing: 1px; }
-.footer-link { font-size: 0.75rem; color: rgba(255,255,255,0.15); text-decoration: none; letter-spacing: 1px; transition: color 0.2s; }
+.footer-texto {
+  font-size: 0.75rem; color: rgba(255,255,255,0.2);
+  letter-spacing: 1px;
+}
+.footer-link {
+  font-size: 0.75rem; color: rgba(255,255,255,0.15);
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+}
 .footer-link:hover { color: rgba(255,255,255,0.4); }
 
-@keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
-@keyframes fadeUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
+/* ── ANIMAÇÕES ── */
+@keyframes fadeDown {
+  from { opacity:0; transform: translateY(-16px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(20px); }
+  to   { opacity:1; transform: translateY(0); }
+}
 
+/* ── ACESSIBILIDADE ── */
+.curso-card:focus-visible {
+  outline: 2px solid var(--verde);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .curso-card:hover { transform: none; }
+}
+
+/* ── RESPONSIVO ── */
 @media (max-width: 600px) {
   header, .hero, .cursos-section { padding-left: 20px; padding-right: 20px; }
   .hero { padding-top: 36px; }
@@ -170,67 +309,83 @@ footer {
 
 <div class="page">
 
+  <!-- HEADER -->
   <header>
     <div class="logo-marca">
-      <div class="logo-badge">PA</div>
+      <div class="logo-badge">WS</div>
       <div class="logo-texto">
-        <h1>PORTAL DE AULAS</h1>
-        <span>Material Didático</span>
+        <h1>PROF. WILSON SILVA</h1>
+        <span>Aulas e simuladores</span>
       </div>
     </div>
     <div class="header-ano" id="ano-letivo"></div>
   </header>
 
+  <!-- HERO -->
   <div class="hero">
     <div class="hero-tag">
       <div class="hero-tag-dot"></div>
       <span>Aulas disponíveis</span>
     </div>
-    <h2>Escolha o <em>curso</em><br>e acesse os slides</h2>
-    <p>Slides organizados por disciplina. Simuladores interativos integrados. Acesso rápido em qualquer dispositivo.</p>
+    <h2>Escolha a <em>matéria</em><br>e comece a estudar</h2>
+    <p>Aulas para ler no navegador, exercícios com correção na hora e simuladores interativos.</p>
   </div>
 
+  <!-- MATÉRIAS -->
   <div class="cursos-section">
-    <div class="cursos-label">Cursos disponíveis</div>
-    <div class="cursos-grid" id="cursos-grid"></div>
+    <div class="cursos-label">Matérias</div>
+    <div class="cursos-grid" id="materias-grid">
+      <!-- gerado a partir do catalogo.js -->
+    </div>
   </div>
 
+  <!-- FOOTER -->
   <footer>
-    <span class="footer-texto">Portal de Aulas · Material Didático</span>
-    <a href="painel.html" class="footer-link">acesso restrito</a>
+    <span class="footer-texto">Prof. Wilson Silva · Material de aula</span>
+    <span class="footer-texto" id="footer-ano"></span>
   </footer>
 
 </div>
 
+<script src="catalogo.js"></script>
 <script>
-document.getElementById('ano-letivo').textContent = new Date().getFullYear();
+const ano = new Date().getFullYear();
+document.getElementById('ano-letivo').textContent = ano;
+document.getElementById('footer-ano').textContent = '© ' + ano;
 
-// ── ADICIONE OU REMOVA CURSOS AQUI ──
-const CURSOS = [
-  { id:"instalacoes-eletricas", nome:"Instalações Elétricas",   desc:"Projetos, normas NBR, dimensionamento e segurança",       icone:"🔌", cor:"icone-verde"  },
-  { id:"automacao-industrial",  nome:"Automação Industrial",    desc:"CLP, sensores, atuadores e sistemas SCADA",               icone:"⚙️", cor:"icone-laranja"},
-  { id:"eletronica",            nome:"Eletrônica",              desc:"Circuitos analógicos, digitais e microcontroladores",     icone:"🔬", cor:"icone-roxo"   },
-  { id:"redes-computadores",    nome:"Redes de Computadores",   desc:"TCP/IP, infraestrutura, segurança e protocolos",          icone:"🌐", cor:"icone-ciano"  },
-  { id:"ciber-sistemas",        nome:"Ciber Sistemas",          desc:"Automação, redes, IoT e sistemas cyber-físicos",          icone:"⚡", cor:"icone-azul"   },
-];
+function renderMaterias() {
+  const grid = document.getElementById('materias-grid');
+  grid.innerHTML = MATERIAS.map(m => {
+    const n = (m.aulas || []).length;
+    const infoAulas = n ? `${n} ${n === 1 ? 'aula' : 'aulas'}` : 'Em preparação';
+    return `
+    <a class="curso-card" href="materia.html?m=${m.id}" title="${m.nome}">
+      <div class="card-brilho"></div>
+      <div class="card-icone ${m.cor}">${m.icone}</div>
+      <div class="card-nome">${m.nome}</div>
+      <div class="card-desc">${m.desc}</div>
+      <div class="card-meta">
+        <span class="meta-item">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4h7a3 3 0 013 3v13a2 2 0 00-2-2H2z"/><path d="M22 4h-7a3 3 0 00-3 3v13a2 2 0 012-2h8z"/></svg>
+          ${infoAulas}
+        </span>
+        <span class="meta-item">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          Exercícios
+        </span>
+        <span class="meta-item">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+          Simuladores
+        </span>
+      </div>
+      <div class="card-seta">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>`;
+  }).join('');
+}
 
-document.getElementById('cursos-grid').innerHTML = CURSOS.map((c,i) => `
-  <a class="curso-card" href="aulas.html?curso=${c.id}" style="animation-delay:${0.15+i*0.07}s">
-    <div class="card-brilho"></div>
-    <div class="card-icone ${c.cor}">${c.icone}</div>
-    <div class="card-nome">${c.nome}</div>
-    <div class="card-desc">${c.desc}</div>
-    <div class="card-meta">
-      <span class="meta-item">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-        Ver aulas
-      </span>
-    </div>
-    <div class="card-seta">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </div>
-  </a>
-`).join('');
+renderMaterias();
 </script>
 </body>
 </html>
