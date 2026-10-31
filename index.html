@@ -356,7 +356,7 @@ document.getElementById('footer-ano').textContent = '© ' + ano;
 function renderMaterias() {
   const grid = document.getElementById('materias-grid');
   grid.innerHTML = MATERIAS.map(m => {
-    const n = (m.aulas || []).length;
+    const n = (m.aulas || []).filter(a => a.aula).length;  // só aulas publicadas
     const infoAulas = n ? `${n} ${n === 1 ? 'aula' : 'aulas'}` : 'Em preparação';
     return `
     <a class="curso-card" href="materia.html?m=${m.id}" title="${m.nome}">
