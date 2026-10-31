@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Matéria — Prof. Wilson Silva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul: #004aad;
+  --azul-escuro: #00317a;
+  --azul-brilho: #1a6dd4;
+  --verde: #00b86b;
+  --verde-escuro: #008f52;
+  --branco: #ffffff;
+  --cinza-claro: #f4f6fa;
+  --cinza-medio: #e2e8f4;
+  --texto: #1a2340;
+  --texto-muted: #5a6a8a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--texto);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── FUNDO ANIMADO ── */
+.bg-mesh {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(0,74,173,0.35) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 80% 80%, rgba(0,184,107,0.2) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 70% at 50% 50%, rgba(0,49,122,0.4) 0%, transparent 70%),
+    #0d1a30;
+}
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── LAYOUT ── */
+.page {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
+header {
+  padding: 28px 40px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: fadeDown 0.6s ease both;
+}
+.logo-marca {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo-badge {
+  width: 46px; height: 46px;
+  background: linear-gradient(135deg, var(--azul-brilho), var(--verde));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800; font-size: 1.3rem; color: white;
+  letter-spacing: -1px;
+  box-shadow: 0 4px 20px rgba(0,74,173,0.5);
+}
+.logo-texto h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 1.3rem;
+  color: white; letter-spacing: 3px;
+  line-height: 1;
+}
+.logo-texto span {
+  font-size: 0.7rem; color: rgba(255,255,255,0.5);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+.header-ano {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem; color: rgba(255,255,255,0.4);
+  letter-spacing: 2px;
+}
+
+/* Cores dos ícones */
+.icone-azul { background: rgba(0,74,173,0.25); }
+.icone-verde { background: rgba(0,184,107,0.2); }
+.icone-laranja { background: rgba(245,130,32,0.2); }
+.icone-roxo { background: rgba(100,60,200,0.2); }
+.icone-vermelho { background: rgba(220,50,50,0.2); }
+.icone-ciano { background: rgba(0,180,200,0.2); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 20px 40px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: space-between;
+  animation: fadeUp 0.5s ease 0.5s both;
+}
+.footer-texto {
+  font-size: 0.75rem; color: rgba(255,255,255,0.2);
+  letter-spacing: 1px;
+}
+.footer-link {
+  font-size: 0.75rem; color: rgba(255,255,255,0.15);
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+}
+.footer-link:hover { color: rgba(255,255,255,0.4); }
+
+/* ── ANIMAÇÕES ── */
+@keyframes fadeDown {
+  from { opacity:0; transform: translateY(-16px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(20px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+
+#principal { flex: 1; display: flex; flex-direction: column; }
+
+/* ── VOLTAR ── */
+.btn-voltar {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: rgba(255,255,255,0.6); text-decoration: none;
+  font-size: 0.85rem; font-weight: 500;
+  padding: 8px 14px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.btn-voltar:hover { color: white; border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.05); }
+
+/* ── CABEÇALHO DA MATÉRIA ── */
+.materia-topo {
+  padding: 48px 40px 36px;
+  display: flex; align-items: center; gap: 22px;
+  animation: fadeDown 0.6s ease 0.1s both;
+}
+.materia-icone {
+  width: 76px; height: 76px; border-radius: 18px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.3rem;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.materia-topo h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800; font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  color: white; line-height: 1; letter-spacing: -0.5px;
+}
+.materia-topo p {
+  margin-top: 8px; font-size: 1rem; font-weight: 300;
+  color: rgba(255,255,255,0.55); max-width: 620px; line-height: 1.5;
+}
+.materia-progresso { margin-top: 10px; font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+
+/* ── CONTEÚDO ── */
+.conteudo {
+  padding: 0 40px 60px; flex: 1;
+  display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px;
+  align-items: start; max-width: 1240px;
+}
+.secao-titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 1.25rem; color: white;
+  margin-bottom: 16px;
+}
+
+/* Trilha de aulas (sequência numerada) */
+.trilha { list-style: none; position: relative; }
+.trilha::before {
+  content: ''; position: absolute; left: 21px; top: 26px; bottom: 26px;
+  width: 2px; background: rgba(255,255,255,0.08);
+}
+.aula {
+  position: relative; display: grid; grid-template-columns: 44px minmax(0,1fr);
+  gap: 18px; padding: 6px 0 22px;
+  animation: fadeUp 0.5s ease both;
+}
+.aula-num {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.15rem;
+  background: #13213b; color: rgba(255,255,255,0.55);
+  border: 2px solid rgba(255,255,255,0.12);
+  position: relative; z-index: 1;
+}
+.aula.publicada .aula-num { background: var(--azul); color: white; border-color: var(--azul-brilho); }
+.aula-corpo {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 18px 20px;
+}
+.aula-titulo {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  font-size: 1.3rem; color: white; line-height: 1.2;
+}
+.aula-titulo a { color: inherit; text-decoration: none; }
+.aula-titulo a:hover { color: #7fc0ff; }
+.aula-resumo { margin-top: 6px; font-size: 0.88rem; color: rgba(255,255,255,0.5); line-height: 1.55; font-weight: 300; }
+.aula-acoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.acao {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 14px; border-radius: 8px;
+  font-size: 0.84rem; font-weight: 600; text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+.acao-ler  { background: var(--azul); color: white; }
+.acao-ler:hover { background: var(--azul-brilho); }
+.acao-sec  { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.1); }
+.acao-sec:hover { background: rgba(255,255,255,0.12); }
+.acao:focus-visible, .simulador:focus-visible, .btn-voltar:focus-visible { outline: 2px solid var(--verde); outline-offset: 2px; }
+.em-preparo {
+  display: inline-block; margin-top: 12px;
+  font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.4);
+  border: 1px dashed rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 10px;
+}
+
+/* Simuladores (coluna lateral) */
+.lateral {
+  position: sticky; top: 24px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; padding: 22px;
+  animation: fadeUp 0.5s ease 0.2s both;
+}
+.lateral .secao-titulo { margin-bottom: 6px; }
+.lateral-desc { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.5; margin-bottom: 16px; font-weight: 300; }
+.simulador {
+  display: block; text-decoration: none;
+  padding: 14px; border-radius: 10px; margin-bottom: 10px;
+  background: rgba(0,184,107,0.08); border: 1px solid rgba(0,184,107,0.2);
+  transition: background 0.2s, border-color 0.2s;
+}
+.simulador:hover { background: rgba(0,184,107,0.14); border-color: rgba(0,184,107,0.4); }
+.simulador strong { display: block; color: white; font-size: 0.95rem; font-weight: 600; }
+.simulador span { display: block; margin-top: 3px; color: rgba(255,255,255,0.5); font-size: 0.8rem; line-height: 1.4; }
+.vazio { font-size: 0.85rem; color: rgba(255,255,255,0.4); line-height: 1.5; }
+
+/* Matéria não encontrada */
+.nao-encontrada { padding: 80px 40px; text-align: center; color: rgba(255,255,255,0.6); flex: 1; }
+.nao-encontrada h2 { font-family: 'Barlow Condensed', sans-serif; color: white; font-size: 2rem; margin-bottom: 10px; }
+.nao-encontrada a { color: #7fc0ff; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+@media (max-width: 900px) {
+  .conteudo { grid-template-columns: 1fr; }
+  .lateral { position: static; }
+}
+@media (max-width: 600px) {
+  header, .materia-topo, .conteudo { padding-left: 20px; padding-right: 20px; }
+  .materia-topo { padding-top: 32px; flex-direction: column; align-items: flex-start; gap: 14px; }
+  .materia-icone { width: 60px; height: 60px; font-size: 1.8rem; }
+  .aula { grid-template-columns: 36px minmax(0,1fr); gap: 12px; }
+  .aula-num { width: 36px; height: 36px; font-size: 1rem; }
+  .trilha::before { left: 17px; }
+  footer { flex-direction: column; gap: 8px; text-align: center; padding-left: 20px; padding-right: 20px; }
+  header .logo-texto span { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+
+<div class="page">
+
+  <header>
+    <a class="logo-marca" href="index.html" style="text-decoration:none;">
+      <div class="logo-badge">WS</div>
+      <div class="logo-texto">
+        <h1>PROF. WILSON SILVA</h1>
+        <span>Aulas e simuladores</span>
+      </div>
+    </a>
+    <a class="btn-voltar" href="index.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Matérias
+    </a>
+  </header>
+
+  <main id="principal"></main>
+
+  <footer>
+    <span class="footer-texto">Prof. Wilson Silva · Material de aula</span>
+    <span class="footer-texto" id="footer-ano"></span>
+  </footer>
+
+</div>
+
+<script src="catalogo.js"></script>
+<script>
+document.getElementById('footer-ano').textContent = '© ' + new Date().getFullYear();
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+const ICONES = {
+  ler:   '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4h7a3 3 0 013 3v13a2 2 0 00-2-2H2z"/><path d="M22 4h-7a3 3 0 00-3 3v13a2 2 0 012-2h8z"/></svg>',
+  exerc: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>',
+  sim:   '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>'
+};
+
+function renderMateria() {
+  const main = document.getElementById('principal');
+  const id = new URLSearchParams(location.search).get('m');
+  const m = MATERIAS.find(x => x.id === id);
+
+  if (!m) {
+    document.title = 'Matéria não encontrada — Prof. Wilson Silva';
+    main.innerHTML = `
+      <div class="nao-encontrada">
+        <h2>Matéria não encontrada</h2>
+        <p>O endereço não corresponde a nenhuma matéria cadastrada. <a href="index.html">Voltar para as matérias</a>.</p>
+      </div>`;
+    return;
+  }
+
+  document.title = `${m.nome} — Prof. Wilson Silva`;
+  const aulas = m.aulas || [];
+  const sims  = m.simuladores || [];
+  const publicadas = aulas.filter(a => a.aula).length;
+  const progresso = !aulas.length ? 'Aulas em preparação'
+    : publicadas === 0 ? `${aulas.length} ${aulas.length === 1 ? 'aula' : 'aulas'} em preparação`
+    : publicadas === aulas.length ? `${aulas.length} ${aulas.length === 1 ? 'aula' : 'aulas'}`
+    : `${publicadas} de ${aulas.length} aulas publicadas`;
+
+  const linkAula  = a => `aula.html?m=${encodeURIComponent(m.id)}&a=${encodeURIComponent(a.id)}`;
+  const linkExerc = a => `exercicios.html?m=${encodeURIComponent(m.id)}&a=${encodeURIComponent(a.id)}`;
+
+  const itens = aulas.map((a, i) => {
+    const acoes = [];
+    if (a.aula)       acoes.push(`<a class="acao acao-ler" href="${linkAula(a)}">${ICONES.ler} Ler a aula</a>`);
+    if (a.exercicios) acoes.push(`<a class="acao acao-sec" href="${linkExerc(a)}">${ICONES.exerc} Exercícios</a>`);
+    if (a.simulador)  acoes.push(`<a class="acao acao-sec" href="${esc(a.simulador)}">${ICONES.sim} Simulador</a>`);
+    const titulo = a.aula ? `<a href="${linkAula(a)}">${esc(a.titulo)}</a>` : esc(a.titulo);
+    return `
+      <li class="aula${a.aula ? ' publicada' : ''}" style="animation-delay:${0.15 + i * 0.06}s">
+        <div class="aula-num">${i + 1}</div>
+        <div class="aula-corpo">
+          <div class="aula-titulo">${titulo}</div>
+          <div class="aula-resumo">${esc(a.resumo)}</div>
+          ${acoes.length ? `<div class="aula-acoes">${acoes.join('')}</div>` : '<span class="em-preparo">Em preparação</span>'}
+        </div>
+      </li>`;
+  }).join('');
+
+  const listaSims = sims.length
+    ? sims.map(s => `<a class="simulador" href="${esc(s.arquivo)}"><strong>${esc(s.titulo)}</strong>${s.desc ? `<span>${esc(s.desc)}</span>` : ''}</a>`).join('')
+    : '<p class="vazio">Nenhum simulador publicado ainda.</p>';
+
+  main.innerHTML = `
+    <div class="materia-topo">
+      <div class="materia-icone ${esc(m.cor)}">${m.icone}</div>
+      <div>
+        <h2>${esc(m.nome)}</h2>
+        <p>${esc(m.desc)}</p>
+        <div class="materia-progresso">${progresso}</div>
+      </div>
+    </div>
+    <div class="conteudo">
+      <section>
+        <h3 class="secao-titulo">Aulas</h3>
+        ${aulas.length ? `<ol class="trilha">${itens}</ol>` : '<p class="vazio">As aulas desta matéria estão em preparação.</p>'}
+      </section>
+      <aside class="lateral">
+        <h3 class="secao-titulo">Simuladores</h3>
+        <p class="lateral-desc">Pratique no navegador o que viu nas aulas.</p>
+        ${listaSims}
+      </aside>
+    </div>`;
+}
+
+renderMateria();
+</script>
+</body>
+</html>
