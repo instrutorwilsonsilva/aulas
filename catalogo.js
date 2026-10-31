@@ -18,7 +18,7 @@ const MATERIAS = [
         aula: false, exercicios: false, simulador: "" },          // slides 4–5
       { id: "fusiveis-disjuntores", titulo: "Fusíveis e disjuntores",
         resumo: "Fusíveis aM, gG e aR, tipos D e NH; disjuntores termomagnéticos, curvas B, C e D, caixa moldada e DR",
-        aula: true,  exercicios: false, simulador: "" },          // slides 6–27
+        aula: true,  exercicios: true,  simulador: "" },          // slides 6–27
       { id: "chaves-botoes-sinalizadores", titulo: "Chaves, botões e sinalizadores",
         resumo: "Chave seccionadora e comutadora, botão de emergência, botoeiras NA e NF, fim de curso e sinalizadores",
         aula: false, exercicios: false, simulador: "" },          // slides 28–38

@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Exercícios — Prof. Wilson Silva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul: #004aad;
+  --azul-escuro: #00317a;
+  --azul-brilho: #1a6dd4;
+  --verde: #00b86b;
+  --verde-escuro: #008f52;
+  --branco: #ffffff;
+  --cinza-claro: #f4f6fa;
+  --cinza-medio: #e2e8f4;
+  --texto: #1a2340;
+  --texto-muted: #5a6a8a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--texto);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── FUNDO ANIMADO ── */
+.bg-mesh {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(0,74,173,0.35) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 80% 80%, rgba(0,184,107,0.2) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 70% at 50% 50%, rgba(0,49,122,0.4) 0%, transparent 70%),
+    #0d1a30;
+}
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── LAYOUT ── */
+.page {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
+header {
+  padding: 28px 40px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: fadeDown 0.6s ease both;
+}
+.logo-marca {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo-badge {
+  width: 46px; height: 46px;
+  background: linear-gradient(135deg, var(--azul-brilho), var(--verde));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800; font-size: 1.3rem; color: white;
+  letter-spacing: -1px;
+  box-shadow: 0 4px 20px rgba(0,74,173,0.5);
+}
+.logo-texto h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 1.3rem;
+  color: white; letter-spacing: 3px;
+  line-height: 1;
+}
+.logo-texto span {
+  font-size: 0.7rem; color: rgba(255,255,255,0.5);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+.header-ano {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem; color: rgba(255,255,255,0.4);
+  letter-spacing: 2px;
+}
+
+/* Cores dos ícones */
+.icone-azul { background: rgba(0,74,173,0.25); }
+.icone-verde { background: rgba(0,184,107,0.2); }
+.icone-laranja { background: rgba(245,130,32,0.2); }
+.icone-roxo { background: rgba(100,60,200,0.2); }
+.icone-vermelho { background: rgba(220,50,50,0.2); }
+.icone-ciano { background: rgba(0,180,200,0.2); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 20px 40px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: space-between;
+  animation: fadeUp 0.5s ease 0.5s both;
+}
+.footer-texto {
+  font-size: 0.75rem; color: rgba(255,255,255,0.2);
+  letter-spacing: 1px;
+}
+.footer-link {
+  font-size: 0.75rem; color: rgba(255,255,255,0.15);
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+}
+.footer-link:hover { color: rgba(255,255,255,0.4); }
+
+/* ── ANIMAÇÕES ── */
+@keyframes fadeDown {
+  from { opacity:0; transform: translateY(-16px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(20px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+
+/* Página de aula: topo escuro (identidade) + área de leitura clara */
+body { background: #f4f6fa; }
+.page { min-height: 0; }
+.topo-aula { position: relative; overflow: hidden; }
+.topo-aula .bg-mesh, .topo-aula .bg-grid { position: absolute; }
+
+/* Barra de progresso da leitura */
+.progresso-leitura {
+  position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 50;
+  background: linear-gradient(90deg, #4da6ff, var(--verde));
+}
+
+.btn-voltar {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: rgba(255,255,255,0.65); text-decoration: none;
+  font-size: 0.85rem; font-weight: 500;
+  padding: 8px 14px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.12);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.btn-voltar:hover { color: white; border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); }
+
+.cabecalho-aula { position: relative; z-index: 1; padding: 40px 40px 44px; max-width: 1180px; animation: fadeDown 0.6s ease 0.1s both; }
+.trilha-nav { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+.trilha-nav a { color: #7fc0ff; text-decoration: none; }
+.trilha-nav a:hover { text-decoration: underline; }
+.cabecalho-aula h1 {
+  margin-top: 10px;
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+  font-size: clamp(2.1rem, 4.5vw, 3.3rem); line-height: 1.05; color: white; letter-spacing: -0.5px;
+}
+.cabecalho-aula p { margin-top: 10px; max-width: 680px; font-size: 1.02rem; line-height: 1.55; color: rgba(255,255,255,0.6); font-weight: 300; }
+
+/* Área de leitura */
+.leitura {
+  display: grid; grid-template-columns: 230px minmax(0, 760px);
+  gap: 48px; padding: 40px 40px 72px; max-width: 1180px;
+}
+.indice { position: sticky; top: 24px; align-self: start; }
+.indice-titulo { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.05rem; color: var(--texto); margin-bottom: 10px; }
+.indice ol { list-style: none; border-left: 2px solid var(--cinza-medio); }
+.indice a {
+  display: block; padding: 7px 0 7px 14px; margin-left: -2px;
+  border-left: 2px solid transparent;
+  color: var(--texto-muted); text-decoration: none; font-size: 0.9rem; line-height: 1.35;
+  transition: color 0.2s, border-color 0.2s;
+}
+.indice a:hover { color: var(--azul); }
+.indice a.ativo { color: var(--azul); border-left-color: var(--azul); font-weight: 600; }
+.indice-movel { display: none; }
+
+/* Texto da aula */
+.artigo { color: var(--texto); font-size: 1.05rem; line-height: 1.72; min-width: 0; }
+.artigo section { scroll-margin-top: 24px; }
+.artigo section + section { margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--cinza-medio); }
+.artigo h2 {
+  display: flex; align-items: center; gap: 12px;
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+  font-size: 2rem; line-height: 1.1; color: var(--texto); margin-bottom: 18px;
+}
+.artigo h2 .num {
+  flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--azul); color: white; font-size: 1.1rem;
+}
+.artigo h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.45rem; margin: 34px 0 12px; color: var(--azul-escuro); }
+.artigo h4 { font-weight: 600; font-size: 1.08rem; margin: 26px 0 8px; }
+.artigo p { margin: 0 0 14px; }
+.artigo ul, .artigo ol { margin: 0 0 16px 22px; }
+.artigo li { margin-bottom: 6px; }
+.artigo strong { font-weight: 600; color: #0f1a33; }
+.codigo {
+  display: inline-block; padding: 0 7px; border-radius: 5px;
+  background: #e8eefb; color: var(--azul-escuro);
+  font-weight: 600; font-size: 0.92em;
+}
+
+/* Figuras */
+.fig { margin: 22px 0; }
+.fig-quadro {
+  display: flex; align-items: center; justify-content: center;
+  background: white; border: 1px solid var(--cinza-medio); border-radius: 12px;
+  padding: 16px; cursor: zoom-in;
+}
+.fig img { max-width: 100%; max-height: 340px; height: auto; object-fit: contain; display: block; }
+.fig.pequena .fig-quadro { max-width: 420px; }
+.fig.media .fig-quadro { max-width: 520px; }
+.fig figcaption { margin-top: 8px; font-size: 0.86rem; line-height: 1.45; color: var(--texto-muted); }
+.figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin: 22px 0; }
+.figs .fig { margin: 0; }
+.figs .fig img { max-height: 230px; }
+.figs .fig-quadro { height: 100%; min-height: 160px; }
+
+/* Tabelas */
+.tabela-rolagem { overflow-x: auto; margin: 18px 0 22px; border: 1px solid var(--cinza-medio); border-radius: 12px; background: white; }
+.tabela { width: 100%; border-collapse: collapse; font-size: 0.93rem; line-height: 1.5; min-width: 520px; }
+.tabela th { background: var(--azul); color: white; text-align: left; font-weight: 600; padding: 10px 14px; }
+.tabela td { padding: 11px 14px; border-top: 1px solid var(--cinza-medio); vertical-align: top; }
+.tabela tbody tr:nth-child(even) td { background: #f8faff; }
+
+/* Destaques */
+.destaque { margin: 20px 0; padding: 14px 18px; border-radius: 10px; border-left: 4px solid; }
+.destaque > strong { display: block; margin-bottom: 4px; }
+.destaque p { margin: 0; }
+.destaque.atencao { background: #fff8e6; border-color: #f0a500; }
+.destaque.atencao > strong { color: #9a6400; }
+.destaque.nota { background: #eaf4ff; border-color: var(--azul-brilho); }
+
+.lista-revisao { list-style: none; margin-left: 0 !important; }
+.lista-revisao li {
+  position: relative; padding: 12px 16px 12px 44px; margin-bottom: 10px;
+  background: white; border: 1px solid var(--cinza-medio); border-radius: 10px;
+}
+.lista-revisao li::before {
+  content: ''; position: absolute; left: 16px; top: 18px; width: 14px; height: 8px;
+  border-left: 2.5px solid var(--verde); border-bottom: 2.5px solid var(--verde); transform: rotate(-45deg);
+}
+
+/* Fim da aula: exercícios e navegação */
+.fim-aula { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--cinza-medio); }
+.cta-exercicios {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  background: var(--azul); color: white; border-radius: 14px; padding: 20px 22px; margin-bottom: 22px;
+}
+.cta-exercicios strong { font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; display: block; }
+.cta-exercicios span { font-size: 0.9rem; opacity: 0.8; }
+.cta-exercicios a { background: white; color: var(--azul); font-weight: 700; padding: 10px 18px; border-radius: 8px; text-decoration: none; white-space: nowrap; }
+.nav-aulas { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.nav-aula {
+  display: block; padding: 16px 18px; border-radius: 12px; text-decoration: none;
+  background: white; border: 1px solid var(--cinza-medio); color: var(--texto);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+a.nav-aula:hover { border-color: var(--azul-brilho); box-shadow: 0 6px 18px rgba(0,74,173,0.1); }
+.nav-aula small { display: block; font-size: 0.78rem; color: var(--texto-muted); margin-bottom: 3px; }
+.nav-aula strong { font-family: 'Barlow Condensed', sans-serif; font-size: 1.15rem; }
+.nav-aula.proxima { text-align: right; }
+.nav-aula.inativa { opacity: 0.55; }
+.nav-aula.inativa strong { font-weight: 600; }
+
+/* Estados */
+.estado { padding: 70px 40px; text-align: center; color: var(--texto-muted); }
+.estado h2 { font-family: 'Barlow Condensed', sans-serif; color: var(--texto); font-size: 1.9rem; margin-bottom: 8px; }
+.estado a { color: var(--azul); }
+
+/* Ampliar imagem */
+.zoom {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  background: rgba(13,26,48,0.92); padding: 24px; cursor: zoom-out;
+  align-items: center; justify-content: center; flex-direction: column; gap: 12px;
+}
+.zoom.aberto { display: flex; }
+.zoom img { max-width: 100%; max-height: calc(100vh - 100px); background: white; border-radius: 8px; padding: 10px; }
+.zoom p { color: rgba(255,255,255,0.85); font-size: 0.9rem; text-align: center; max-width: 700px; }
+
+a:focus-visible, .fig-quadro:focus-visible, summary:focus-visible { outline: 2px solid var(--azul-brilho); outline-offset: 2px; }
+
+footer.rodape-aula { background: var(--texto); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto !important; }
+}
+@media (max-width: 920px) {
+  .leitura { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .indice { display: none; }
+  .indice-movel {
+    display: block; margin-bottom: 28px;
+    background: white; border: 1px solid var(--cinza-medio); border-radius: 12px;
+  }
+  .indice-movel summary { padding: 14px 16px; font-weight: 600; cursor: pointer; color: var(--texto); }
+  .indice-movel ol { list-style: none; padding: 0 16px 12px; }
+  .indice-movel a { display: block; padding: 8px 0; color: var(--azul); text-decoration: none; border-top: 1px solid var(--cinza-claro); }
+}
+@media (max-width: 600px) {
+  header, .cabecalho-aula, .leitura { padding-left: 20px; padding-right: 20px; }
+  header .logo-texto { display: none; }
+  .cabecalho-aula { padding-top: 28px; padding-bottom: 32px; }
+  /* Tabelas viram cartões empilhados */
+  .tabela-rolagem { overflow: visible; border: none; background: none; }
+  .tabela { min-width: 0; }
+  .tabela thead { display: none; }
+  .tabela, .tabela tbody, .tabela tr, .tabela td { display: block; width: 100%; }
+  .tabela tr { background: white; border: 1px solid var(--cinza-medio); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+  .tabela td { border-top: none; padding: 6px 14px 8px; }
+  .tabela tbody tr:nth-child(even) td { background: transparent; }
+  .tabela td:first-child { background: var(--azul) !important; color: white; padding: 10px 14px; }
+  .tabela td:first-child strong { color: white; }
+  .tabela td[data-label]:not(:first-child)::before {
+    content: attr(data-label); display: block;
+    font-size: 0.75rem; font-weight: 600; color: var(--texto-muted); margin-bottom: 2px;
+  }
+  .artigo { font-size: 1rem; }
+  .artigo h2 { font-size: 1.65rem; }
+  .nav-aulas { grid-template-columns: 1fr; }
+  .nav-aula.proxima { text-align: left; }
+  footer { flex-direction: column; gap: 8px; text-align: center; padding-left: 20px; padding-right: 20px; }
+}
+
+/* ── EXERCÍCIOS ── */
+.area-ex { padding: 36px 40px 72px; max-width: 900px; }
+.placar {
+  display: flex; align-items: center; gap: 28px; flex-wrap: wrap;
+  background: white; border: 1px solid var(--cinza-medio); border-radius: 14px;
+  padding: 16px 22px; margin-bottom: 28px;
+}
+.placar-item strong { display: block; font-family: 'Barlow Condensed', sans-serif; font-size: 1.7rem; line-height: 1; color: var(--texto); }
+.placar-item span { font-size: 0.82rem; color: var(--texto-muted); }
+.placar-barra { flex: 1; min-width: 160px; height: 8px; background: var(--cinza-medio); border-radius: 4px; overflow: hidden; }
+.placar-barra div { height: 100%; width: 0; background: var(--verde); border-radius: 4px; transition: width 0.4s; }
+
+.questao {
+  background: white; border: 1px solid var(--cinza-medio); border-radius: 14px;
+  padding: 22px 24px; margin-bottom: 18px; scroll-margin-top: 20px;
+}
+.questao.certa  { border-color: rgba(0,184,107,0.5); }
+.questao.errada { border-color: rgba(229,57,53,0.45); }
+.q-cab { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.q-num {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--azul); color: white; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem;
+}
+.questao.certa .q-num  { background: var(--verde); }
+.questao.errada .q-num { background: #e53935; }
+.q-tipo { font-size: 0.8rem; color: var(--texto-muted); }
+.q-enunciado { font-size: 1.05rem; line-height: 1.6; color: var(--texto); margin-bottom: 14px; font-weight: 500; }
+.questao .fig { margin: 0 0 16px; }
+.questao .fig-quadro { max-width: 340px; }
+.questao .fig img { max-height: 220px; }
+
+.alternativas { display: flex; flex-direction: column; gap: 8px; }
+.alt {
+  display: flex; align-items: flex-start; gap: 12px; cursor: pointer;
+  padding: 11px 14px; border: 1.5px solid var(--cinza-medio); border-radius: 10px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.alt:hover { border-color: #b9c8e8; background: #fafcff; }
+.alt input { position: absolute; opacity: 0; pointer-events: none; }
+.alt-letra {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1.5px solid #b9c8e8; font-weight: 700; font-size: 0.85rem; color: var(--texto-muted);
+}
+.alt-texto { font-size: 0.98rem; line-height: 1.5; color: var(--texto); padding-top: 2px; }
+/* "selecionada" só vale antes de verificar; depois valem as cores de certo/errado */
+.questao:not(.respondida) .alt:has(input:checked) { border-color: var(--azul); background: #f0f5ff; }
+.questao:not(.respondida) .alt:has(input:checked) .alt-letra { background: var(--azul); border-color: var(--azul); color: white; }
+.alt:has(input:focus-visible) { outline: 2px solid var(--azul-brilho); outline-offset: 2px; }
+.respondida .alt { cursor: default; }
+.respondida .alt:hover { background: transparent; border-color: var(--cinza-medio); }
+.alt.alt-certa, .respondida .alt.alt-certa:hover { border-color: var(--verde); background: #e8f8f0; }
+.alt.alt-certa .alt-letra { background: var(--verde); border-color: var(--verde); color: white; }
+.alt.alt-errada, .respondida .alt.alt-errada:hover { border-color: #e53935; background: #fdecec; }
+.alt.alt-errada .alt-letra { background: #e53935; border-color: #e53935; color: white; }
+
+.num-linha { display: flex; align-items: center; gap: 10px; }
+.num-linha input {
+  width: 160px; padding: 11px 14px; font-size: 1.05rem; font-family: 'Barlow', sans-serif;
+  border: 1.5px solid var(--cinza-medio); border-radius: 10px; outline: none; color: var(--texto);
+}
+.num-linha input:focus { border-color: var(--azul); }
+.num-linha span { font-weight: 600; color: var(--texto-muted); }
+.questao.certa .num-linha input  { border-color: var(--verde); background: #e8f8f0; }
+.questao.errada .num-linha input { border-color: #e53935; background: #fdecec; }
+
+.btn-verificar {
+  margin-top: 16px; padding: 11px 20px; border: none; border-radius: 9px; cursor: pointer;
+  background: var(--azul); color: white; font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 0.95rem;
+  transition: background 0.2s;
+}
+.btn-verificar:hover:not(:disabled) { background: var(--azul-brilho); }
+.btn-verificar:disabled { background: #b9c8e8; cursor: not-allowed; }
+.btn-verificar:focus-visible { outline: 2px solid var(--azul-brilho); outline-offset: 2px; }
+.aviso-num { margin-top: 8px; font-size: 0.85rem; color: #c62828; }
+
+.feedback { margin-top: 16px; padding: 14px 16px; border-radius: 10px; font-size: 0.95rem; line-height: 1.6; }
+.feedback.certo  { background: #e8f8f0; border-left: 4px solid var(--verde); }
+.feedback.errado { background: #fdecec; border-left: 4px solid #e53935; }
+.feedback strong { display: block; margin-bottom: 4px; }
+.feedback.certo strong  { color: #00744a; }
+.feedback.errado strong { color: #b71c1c; }
+.feedback .resolucao { color: var(--texto); }
+.feedback .resolucao b { font-weight: 600; }
+
+.resultado {
+  background: var(--azul); color: white; border-radius: 16px; padding: 26px 26px; margin-top: 28px;
+  display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
+}
+.resultado h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.9rem; font-weight: 800; line-height: 1.1; }
+.resultado p { opacity: 0.85; margin-top: 4px; }
+.resultado-acoes { display: flex; gap: 10px; flex-wrap: wrap; }
+.resultado-acoes a, .resultado-acoes button {
+  padding: 11px 18px; border-radius: 9px; font-weight: 700; font-size: 0.92rem; text-decoration: none;
+  font-family: 'Barlow', sans-serif; cursor: pointer; border: none;
+}
+.btn-claro { background: white; color: var(--azul); }
+.btn-contorno { background: transparent; color: white; border: 1.5px solid rgba(255,255,255,0.5) !important; }
+
+@media (max-width: 600px) {
+  .area-ex { padding-left: 16px; padding-right: 16px; padding-top: 24px; }
+  .questao { padding: 18px 16px; }
+  .placar { gap: 18px; padding: 14px 16px; }
+  .placar-barra { flex-basis: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="topo-aula">
+  <div class="bg-mesh"></div>
+  <div class="bg-grid"></div>
+  <header>
+    <a class="logo-marca" href="index.html" style="text-decoration:none;">
+      <div class="logo-badge">WS</div>
+      <div class="logo-texto">
+        <h1>PROF. WILSON SILVA</h1>
+        <span>Aulas e simuladores</span>
+      </div>
+    </a>
+    <a class="btn-voltar" id="btn-voltar" href="index.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span id="btn-voltar-texto">Matérias</span>
+    </a>
+  </header>
+  <div class="cabecalho-aula" id="cabecalho"></div>
+</div>
+
+<main id="principal">
+  <div class="estado"><p>Carregando os exercícios...</p></div>
+</main>
+
+<footer class="rodape-aula">
+  <span class="footer-texto">Prof. Wilson Silva · Material de aula</span>
+  <span class="footer-texto" id="footer-ano"></span>
+</footer>
+
+<div class="zoom" id="zoom" role="dialog" aria-modal="true" aria-label="Imagem ampliada">
+  <img id="zoom-img" alt=""/>
+  <p id="zoom-legenda"></p>
+</div>
+
+<script src="catalogo.js"></script>
+<script>
+document.getElementById('footer-ano').textContent = '© ' + new Date().getFullYear();
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ── Parâmetros: exercicios.html?m=<matéria>&a=<aula> ──
+const params  = new URLSearchParams(location.search);
+const ID_MAT  = params.get('m') || '';
+const ID_AULA = params.get('a') || '';
+const MAT     = MATERIAS.find(x => x.id === ID_MAT);
+const AULAS   = MAT ? (MAT.aulas || []) : [];
+const POS     = AULAS.findIndex(x => x.id === ID_AULA);
+const AULA    = POS >= 0 ? AULAS[POS] : null;
+const IMG     = `img/${ID_MAT}/${ID_AULA}/`;
+const CHAVE   = `exercicios_${ID_MAT}_${ID_AULA}`;   // respostas salvas neste navegador
+const linkMat  = () => `materia.html?m=${encodeURIComponent(ID_MAT)}`;
+const linkAula = () => `aula.html?m=${encodeURIComponent(ID_MAT)}&a=${encodeURIComponent(ID_AULA)}`;
+const LETRAS = 'ABCDEFGH';
+
+let QUESTOES = [];
+
+// ── Respostas salvas (ficam no navegador do aluno) ──
+function lerSalvas() { try { return JSON.parse(localStorage.getItem(CHAVE)) || {}; } catch (e) { return {}; } }
+function salvar(r)   { try { localStorage.setItem(CHAVE, JSON.stringify(r)); } catch (e) {} }
+
+function mostrarEstado(titulo, texto) {
+  document.getElementById('principal').innerHTML = `<div class="estado"><h2>${titulo}</h2><p>${texto}</p></div>`;
+}
+
+function montarCabecalho() {
+  if (!MAT) return;
+  const voltar = document.getElementById('btn-voltar');
+  voltar.href = AULA && AULA.aula ? linkAula() : linkMat();
+  document.getElementById('btn-voltar-texto').textContent = AULA && AULA.aula ? 'Voltar para a aula' : MAT.nome;
+  if (!AULA) return;
+  document.title = `Exercícios: ${AULA.titulo} — ${MAT.nome}`;
+  document.getElementById('cabecalho').innerHTML = `
+    <div class="trilha-nav"><a href="${linkMat()}">${esc(MAT.nome)}</a> › ${AULA.aula ? `<a href="${linkAula()}">Aula ${POS + 1}</a>` : `Aula ${POS + 1}`} › Exercícios</div>
+    <h1>Exercícios: ${esc(AULA.titulo)}</h1>
+    <p>Responda e confira na hora. A resolução aparece depois de cada resposta.</p>`;
+}
+
+// ── Chamado pelo arquivo de exercícios ──
+function registrarExercicios(dados) {
+  QUESTOES = dados.questoes || [];
+  renderizar();
+}
+
+function figQuestao(q) {
+  if (!q.imagem) return '';
+  return `<figure class="fig">
+    <div class="fig-quadro" tabindex="0" role="button" aria-label="Ampliar imagem">
+      <img src="${IMG}${q.imagem}" alt="Imagem da questão" loading="lazy"/>
+    </div></figure>`;
+}
+
+function renderizar() {
+  const html = QUESTOES.map((q, i) => {
+    let corpo;
+    if (q.tipo === 'numero') {
+      corpo = `
+        <div class="num-linha">
+          <input type="text" inputmode="decimal" id="in-${q.id}" aria-label="Sua resposta" autocomplete="off"/>
+          ${q.unidade ? `<span>${esc(q.unidade)}</span>` : ''}
+        </div>
+        <div class="aviso-num" id="aviso-${q.id}" hidden>Digite um número.</div>`;
+    } else {
+      corpo = `<div class="alternativas" role="radiogroup" aria-label="Alternativas da questão ${i + 1}">
+        ${q.alternativas.map((t, j) => `
+          <label class="alt" data-idx="${j}">
+            <input type="radio" name="${q.id}" value="${j}"/>
+            <span class="alt-letra">${LETRAS[j]}</span>
+            <span class="alt-texto">${esc(t)}</span>
+          </label>`).join('')}
+      </div>`;
+    }
+    return `
+      <div class="questao" id="${q.id}">
+        <div class="q-cab"><span class="q-num">${i + 1}</span><span class="q-tipo">${q.tipo === 'numero' ? 'Cálculo' : 'Múltipla escolha'}</span></div>
+        <p class="q-enunciado">${esc(q.enunciado)}</p>
+        ${figQuestao(q)}
+        ${corpo}
+        <button class="btn-verificar" id="btn-${q.id}" disabled>Verificar resposta</button>
+        <div class="feedback" id="fb-${q.id}" hidden></div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('principal').innerHTML = `
+    <div class="area-ex">
+      <div class="placar" aria-live="polite">
+        <div class="placar-item"><strong id="pl-resp">0/${QUESTOES.length}</strong><span>respondidas</span></div>
+        <div class="placar-item"><strong id="pl-acertos">0</strong><span>acertos</span></div>
+        <div class="placar-barra"><div id="pl-barra"></div></div>
+      </div>
+      ${html}
+      <div id="resultado"></div>
+    </div>`;
+
+  // Habilita "Verificar" quando houver resposta
+  QUESTOES.forEach(q => {
+    const btn = document.getElementById('btn-' + q.id);
+    if (q.tipo === 'numero') {
+      const inp = document.getElementById('in-' + q.id);
+      inp.addEventListener('input', () => { btn.disabled = !inp.value.trim(); });
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !btn.disabled) verificar(q); });
+    } else {
+      document.querySelectorAll(`input[name="${q.id}"]`).forEach(r =>
+        r.addEventListener('change', () => { btn.disabled = false; }));
+    }
+    btn.addEventListener('click', () => verificar(q));
+  });
+
+  // Restaura respostas salvas
+  const salvas = lerSalvas();
+  QUESTOES.forEach(q => { if (salvas[q.id] !== undefined) aplicarResposta(q, salvas[q.id], false); });
+  atualizarPlacar();
+  ativarZoom();
+}
+
+function numero(v) {
+  const n = parseFloat(String(v).replace(/\s/g, '').replace(',', '.').replace(/[^0-9.\-]/g, ''));
+  return isNaN(n) ? null : n;
+}
+function formatar(n) { return String(n).replace('.', ','); }
+
+function verificar(q) {
+  let valor;
+  if (q.tipo === 'numero') {
+    valor = numero(document.getElementById('in-' + q.id).value);
+    const aviso = document.getElementById('aviso-' + q.id);
+    if (valor === null) { aviso.hidden = false; return; }
+    aviso.hidden = true;
+  } else {
+    const marcada = document.querySelector(`input[name="${q.id}"]:checked`);
+    if (!marcada) return;
+    valor = Number(marcada.value);
+  }
+  const salvas = lerSalvas();
+  salvas[q.id] = valor;
+  salvar(salvas);
+  aplicarResposta(q, valor, true);
+  atualizarPlacar();
+}
+
+function acertou(q, valor) {
+  if (q.tipo === 'numero') return Math.abs(valor - q.resposta) <= (q.tolerancia || 0) + 1e-9;
+  return valor === q.correta;
+}
+
+function aplicarResposta(q, valor, rolar) {
+  const card = document.getElementById(q.id);
+  const certo = acertou(q, valor);
+  card.classList.add('respondida', certo ? 'certa' : 'errada');
+  document.getElementById('btn-' + q.id).hidden = true;
+
+  let respostaCerta;
+  if (q.tipo === 'numero') {
+    const inp = document.getElementById('in-' + q.id);
+    inp.value = formatar(valor); inp.disabled = true;
+    respostaCerta = `${formatar(q.resposta)}${q.unidade ? ' ' + q.unidade : ''}`;
+  } else {
+    card.querySelectorAll('input').forEach(r => { r.disabled = true; r.checked = Number(r.value) === valor; });
+    card.querySelectorAll('.alt').forEach(l => {
+      const j = Number(l.dataset.idx);
+      if (j === q.correta) l.classList.add('alt-certa');
+      else if (j === valor) l.classList.add('alt-errada');
+    });
+    respostaCerta = `${LETRAS[q.correta]}) ${esc(q.alternativas[q.correta])}`;
+  }
+
+  const fb = document.getElementById('fb-' + q.id);
+  fb.className = 'feedback ' + (certo ? 'certo' : 'errado');
+  fb.innerHTML = certo
+    ? `<strong>Correto!</strong><div class="resolucao">${esc(q.resolucao)}</div>`
+    : `<strong>Resposta incorreta. A certa é: ${respostaCerta}</strong><div class="resolucao">${esc(q.resolucao)}</div>`;
+  fb.hidden = false;
+  if (rolar) fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function atualizarPlacar() {
+  const salvas = lerSalvas();
+  const respondidas = QUESTOES.filter(q => salvas[q.id] !== undefined);
+  const acertos = respondidas.filter(q => acertou(q, salvas[q.id])).length;
+  document.getElementById('pl-resp').textContent = `${respondidas.length}/${QUESTOES.length}`;
+  document.getElementById('pl-acertos').textContent = acertos;
+  document.getElementById('pl-barra').style.width = (QUESTOES.length ? respondidas.length / QUESTOES.length * 100 : 0) + '%';
+
+  const res = document.getElementById('resultado');
+  if (respondidas.length < QUESTOES.length) { res.innerHTML = ''; return; }
+  const pct = Math.round(acertos / QUESTOES.length * 100);
+  const msg = pct >= 70 ? 'Bom resultado. Siga para a próxima aula.' : 'Releia a aula e tente de novo.';
+  res.innerHTML = `
+    <div class="resultado">
+      <div><h2>Você acertou ${acertos} de ${QUESTOES.length} (${pct}%)</h2><p>${msg}</p></div>
+      <div class="resultado-acoes">
+        <button class="btn-claro" onclick="refazer()">Refazer os exercícios</button>
+        ${AULA.aula ? `<a class="btn-contorno" href="${linkAula()}">Voltar para a aula</a>` : ''}
+      </div>
+    </div>`;
+}
+
+function refazer() {
+  try { localStorage.removeItem(CHAVE); } catch (e) {}
+  renderizar();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Ampliar imagem ──
+function ativarZoom() {
+  const zoom = document.getElementById('zoom');
+  document.querySelectorAll('.fig-quadro').forEach(q => {
+    const abrir = () => {
+      document.getElementById('zoom-img').src = q.querySelector('img').src;
+      document.getElementById('zoom-legenda').textContent = '';
+      zoom.classList.add('aberto');
+    };
+    q.addEventListener('click', abrir);
+    q.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(); } });
+  });
+}
+document.getElementById('zoom').addEventListener('click', e => e.currentTarget.classList.remove('aberto'));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('zoom').classList.remove('aberto'); });
+
+// ── Início ──
+montarCabecalho();
+if (!MAT) {
+  mostrarEstado('Matéria não encontrada', 'O endereço não corresponde a nenhuma matéria. <a href="index.html">Voltar para as matérias</a>.');
+} else if (!AULA) {
+  mostrarEstado('Aula não encontrada', `Esta aula não está cadastrada em ${esc(MAT.nome)}. <a href="${linkMat()}">Ver as aulas da matéria</a>.`);
+} else if (!AULA.exercicios || !/^[a-z0-9-]+$/.test(ID_MAT + ID_AULA)) {
+  mostrarEstado('Exercícios em preparação', `Os exercícios desta aula ainda não foram publicados. <a href="${linkMat()}">Ver as aulas de ${esc(MAT.nome)}</a>.`);
+} else {
+  const s = document.createElement('script');
+  s.src = `exercicios/${ID_MAT}/${ID_AULA}.js`;
+  s.onerror = () => mostrarEstado('Exercícios não encontrados',
+    `O arquivo <strong>exercicios/${esc(ID_MAT)}/${esc(ID_AULA)}.js</strong> não foi encontrado. Confira se ele foi enviado ao GitHub.`);
+  document.body.appendChild(s);
+}
+</script>
+</body>
+</html>
