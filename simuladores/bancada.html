@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Bancada virtual: partida direta — Prof. Wilson Silva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul: #004aad; --azul-escuro: #00317a; --azul-brilho: #1a6dd4;
+  --verde: #00b86b; --vermelho: #e53935; --laranja: #f0a500;
+  --texto: #1a2340; --texto-muted: #5a6a8a;
+  --cinza-claro: #f4f6fa; --cinza-medio: #e2e8f4;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Barlow', sans-serif; background: var(--cinza-claro); color: var(--texto); }
+
+/* ── Cabeçalho ── */
+.topo {
+  background:
+    radial-gradient(ellipse 70% 120% at 15% 0%, rgba(0,74,173,0.45) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 120% at 90% 100%, rgba(0,184,107,0.18) 0%, transparent 60%),
+    #0d1a30;
+  padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.marca { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.selo {
+  width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--azul-brilho), var(--verde));
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 800; color: white; font-size: 1.15rem; letter-spacing: -1px;
+}
+.marca-texto strong { display: block; font-family: 'Barlow Condensed', sans-serif; font-size: 1.25rem; color: white; letter-spacing: 0.5px; line-height: 1.1; }
+.marca-texto span { font-size: 0.8rem; color: rgba(255,255,255,0.55); }
+.btn-voltar {
+  display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.7); text-decoration: none;
+  font-size: 0.85rem; padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15);
+}
+.btn-voltar:hover { color: white; border-color: rgba(255,255,255,0.35); }
+
+/* ── Layout ── */
+.area { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 20px; padding: 20px 28px 40px; align-items: start; }
+.painel { background: white; border: 1px solid var(--cinza-medio); border-radius: 14px; padding: 18px; position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto; }
+.painel h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.15rem; margin: 18px 0 8px; }
+.painel h2:first-child { margin-top: 0; }
+.desafios { display: grid; gap: 8px; }
+.desafio {
+  text-align: left; padding: 10px 12px; border-radius: 10px; cursor: pointer;
+  border: 1.5px solid var(--cinza-medio); background: white; font-family: inherit; color: var(--texto);
+}
+.desafio strong { display: block; font-size: 0.95rem; }
+.desafio span { font-size: 0.8rem; color: var(--texto-muted); }
+.desafio.ativo { border-color: var(--azul); background: #f0f5ff; }
+.objetivo { font-size: 0.9rem; line-height: 1.55; color: var(--texto); }
+.objetivo ol { margin: 8px 0 0 18px; }
+.objetivo li { margin-bottom: 3px; }
+
+.cores { display: flex; gap: 8px; flex-wrap: wrap; }
+.cor {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 8px; cursor: pointer;
+  border: 1.5px solid var(--cinza-medio); background: white; font-family: inherit; font-size: 0.82rem; color: var(--texto);
+}
+.cor i { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+.cor.ativo { border-color: var(--azul); background: #f0f5ff; }
+.acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.btn {
+  padding: 9px 12px; border-radius: 9px; border: 1.5px solid var(--cinza-medio); background: white;
+  font-family: inherit; font-weight: 600; font-size: 0.85rem; color: var(--texto); cursor: pointer;
+}
+.btn:hover:not(:disabled) { border-color: #b9c8e8; background: #fafcff; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-principal { background: var(--azul); border-color: var(--azul); color: white; width: 100%; padding: 12px; font-size: 0.95rem; margin-top: 4px; }
+.btn-principal:hover:not(:disabled) { background: var(--azul-brilho); border-color: var(--azul-brilho); }
+.btn:focus-visible, .desafio:focus-visible, .cor:focus-visible { outline: 2px solid var(--azul-brilho); outline-offset: 2px; }
+
+.resultado { margin-top: 12px; display: grid; gap: 8px; }
+.item { padding: 10px 12px; border-radius: 9px; font-size: 0.86rem; line-height: 1.45; border-left: 4px solid; }
+.item.ok { background: #e8f8f0; border-color: var(--verde); }
+.item.erro { background: #fdecec; border-color: var(--vermelho); }
+.item strong { display: block; }
+.resumo-ok { padding: 12px; border-radius: 10px; background: var(--verde); color: white; font-weight: 600; text-align: center; }
+
+details.ajuda { margin-top: 10px; border: 1px solid var(--cinza-medio); border-radius: 10px; }
+details.ajuda summary { padding: 10px 12px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+details.ajuda div { padding: 0 12px 12px; font-size: 0.86rem; line-height: 1.55; color: var(--texto); }
+details.ajuda ol, details.ajuda ul { margin-left: 18px; }
+
+/* ── Bancada ── */
+.bancada { background: white; border: 1px solid var(--cinza-medio); border-radius: 14px; overflow: hidden; }
+.barra {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px;
+  border-bottom: 1px solid var(--cinza-medio); background: #fbfcfe;
+}
+.estado-chip { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; background: #e9edf5; color: var(--texto-muted); }
+.estado-chip.on { background: #fff3cd; color: #8a5a00; }
+.mensagem { flex: 1; min-width: 200px; font-size: 0.88rem; color: var(--texto-muted); }
+.mensagem.alerta { color: #8a5a00; font-weight: 600; }
+.mensagem.erro { color: #b71c1c; font-weight: 600; }
+.mensagem.ok { color: #00744a; font-weight: 600; }
+.btn-sobrecarga { border-color: #f5c46b; color: #8a5a00; }
+.svg-caixa { width: 100%; background: #e9ecf1; }
+svg#placa { display: block; width: 100%; height: auto; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+
+/* Dispositivos */
+.corpo { fill: #f8f9fb; stroke: #9aa4b2; stroke-width: 1.5; }
+.tag { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; fill: #1a2340; }
+.sub { font-family: 'Barlow', sans-serif; font-size: 12px; fill: #5a6a8a; }
+.rot-borne { font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 12.5px; fill: #2c3a57; text-anchor: middle; pointer-events: none; }
+.borne { cursor: crosshair; }
+.borne .parafuso { fill: #d4b24c; stroke: #7a6420; stroke-width: 1.5; }
+.borne .fenda { stroke: #7a6420; stroke-width: 1.5; }
+.borne:hover .parafuso, .borne:focus-visible .parafuso { fill: #ffd84d; stroke: #004aad; stroke-width: 2.5; }
+.borne.pendente .parafuso { fill: #4da6ff; stroke: #004aad; stroke-width: 3; }
+.borne:focus { outline: none; }
+.trilho { fill: #b7bec9; }
+.porta { fill: #dfe3ea; stroke: #aab3c0; stroke-width: 1.5; }
+
+.alavanca { cursor: pointer; }
+.alavanca .base { fill: #e3e7ee; stroke: #9aa4b2; }
+.alavanca .tecla { fill: #c62828; transition: y 0.15s; }
+.alavanca .tecla-txt { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 18px; fill: white; text-anchor: middle; pointer-events: none; }
+.alavanca.ligado .tecla { fill: #00a35c; }
+.alavanca:focus { outline: none; }
+.alavanca:focus-visible .base { stroke: var(--azul-brilho); stroke-width: 3; }
+
+.janela { fill: #dfe3ea; stroke: #9aa4b2; }
+.janela.ativo { fill: #00b86b; }
+.janela.trepida { animation: piscar 0.18s steps(2) infinite; }
+.ind-ft { fill: #dfe3ea; stroke: #9aa4b2; }
+.ind-ft.disparado { fill: #f0a500; }
+.reset { cursor: pointer; }
+.reset circle { fill: #1565c0; stroke: #0d3c7a; }
+.reset:hover circle, .reset:focus-visible circle { fill: #1a6dd4; }
+.reset:focus { outline: none; }
+
+.botao { cursor: pointer; }
+.botao .anel { fill: #c9ced8; stroke: #8e98a8; }
+.botao .tecla-bt { transition: r 0.08s; }
+.botao.apertado .tecla-bt { r: 28; }
+.botao:focus { outline: none; }
+.botao:focus-visible .anel { stroke: var(--azul-brilho); stroke-width: 4; }
+.luz { fill: #c8e6c9; stroke: #6e9c70; stroke-width: 2; }
+.luz.acesa { fill: #2ee66f; filter: url(#brilho); }
+
+.rotor { transform-box: fill-box; transform-origin: center; }
+.rotor.gira-h { animation: girar 0.6s linear infinite; }
+.rotor.gira-a { animation: girar 0.6s linear infinite reverse; }
+.motor.zumbido { animation: tremer 0.08s linear infinite; }
+.seta-giro { opacity: 0; }
+.seta-giro.mostrar { opacity: 1; }
+
+/* Fios */
+.fio { cursor: pointer; }
+.fio .halo { stroke: #ffcc33; stroke-width: 11; opacity: 0; fill: none; stroke-linecap: round; }
+.fio.energizado .halo { opacity: 0.55; }
+.fio .cabo { fill: none; stroke-width: 4.5; stroke-linecap: round; }
+.fio .listra { fill: none; stroke: #f6d200; stroke-width: 4.5; stroke-dasharray: 10 10; stroke-linecap: butt; }
+.fio .alvo { fill: none; stroke: transparent; stroke-width: 16; }
+.fio:hover .cabo { stroke-width: 6; }
+.fio.sel .halo { opacity: 1; stroke: #4da6ff; }
+.elastico { stroke: #004aad; stroke-width: 3; stroke-dasharray: 8 6; fill: none; pointer-events: none; }
+
+@keyframes girar { to { transform: rotate(360deg); } }
+@keyframes tremer { 0% { transform: translate(0,0); } 50% { transform: translate(1.5px,0); } 100% { transform: translate(-1.5px,0); } }
+@keyframes piscar { 50% { fill: #00b86b; } }
+@media (prefers-reduced-motion: reduce) {
+  .rotor.gira-h, .rotor.gira-a, .motor.zumbido, .janela.trepida { animation: none; }
+  .seta-giro.mostrar { opacity: 1; }
+}
+
+.aviso-tela { display: none; margin: 0 0 12px; padding: 10px 12px; border-radius: 10px; background: #fff8e6; border: 1px solid #fde4a3; font-size: 0.86rem; }
+@media (max-width: 1000px) {
+  .area { grid-template-columns: minmax(0,1fr); padding: 14px; }
+  .painel { position: static; max-height: none; order: 2; }
+  .aviso-tela { display: block; }
+}
+@media (max-width: 600px) {
+  .topo { padding: 12px 14px; }
+  .marca-texto span { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="topo">
+  <a class="marca" href="../index.html">
+    <div class="selo">WS</div>
+    <div class="marca-texto"><strong>Bancada virtual</strong><span>Comandos Elétricos · Prof. Wilson Silva</span></div>
+  </a>
+  <a class="btn-voltar" href="../materia.html?m=comandos-eletricos">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Comandos Elétricos
+  </a>
+</div>
+
+<div class="area">
+  <aside class="painel">
+    <h2>Desafio</h2>
+    <div class="desafios">
+      <button class="desafio" data-desafio="partida"><strong>1. Partida direta</strong><span>Força e comando com relé térmico</span></button>
+      <button class="desafio" data-desafio="sinalizacao"><strong>2. Partida direta com sinalização</strong><span>H1 acende com o motor ligado</span></button>
+    </div>
+
+    <h2>Objetivo</h2>
+    <div class="objetivo" id="objetivo"></div>
+
+    <h2>Fiação</h2>
+    <div class="cores" id="cores"></div>
+    <div class="acoes">
+      <button class="btn" id="btn-desfazer">Desfazer fio</button>
+      <button class="btn" id="btn-excluir" disabled>Excluir selecionado</button>
+      <button class="btn" id="btn-limpar" style="grid-column: span 2;">Limpar toda a fiação</button>
+    </div>
+
+    <h2>Correção</h2>
+    <button class="btn btn-principal" id="btn-verificar">Verificar montagem</button>
+    <div class="resultado" id="resultado" aria-live="polite"></div>
+
+    <details class="ajuda">
+      <summary>Como usar</summary>
+      <div>
+        <ul>
+          <li>Clique em um borne e depois em outro para ligar um fio. Clique no mesmo borne de novo (ou aperte Esc) para cancelar.</li>
+          <li>Clique num fio para selecioná-lo; aperte Delete ou "Excluir selecionado" para removê-lo.</li>
+          <li>Ligue Q1 e Q2 clicando na alavanca. Com os disjuntores ligados, a fiação fica bloqueada.</li>
+          <li>Segure S1 ou S0 para pressionar o botão. Os fios energizados ficam destacados em amarelo.</li>
+          <li>A montagem fica salva neste navegador.</li>
+        </ul>
+      </div>
+    </details>
+    <details class="ajuda">
+      <summary>Dica: circuito de força</summary>
+      <div><p>Cada fase segue o caminho: rede → Q1 → K1 (contatos principais) → FT1 (1-2, 3-4, 5-6) → motor (U1, V1, W1). Não esqueça o PE do motor.</p></div>
+    </details>
+    <details class="ajuda">
+      <summary>Dica: circuito de comando</summary>
+      <div><p>Duas fases da rede passam pelo Q2. De um lado: Q2 → FT1 95-96 → S0 (NF) → S1 (NA) → bobina K1 (A1). O contato K1 13-14 fica em paralelo com o S1 (selo). A bobina fecha em A2 com a outra fase do Q2.</p></div>
+    </details>
+  </aside>
+
+  <main>
+    <div class="aviso-tela">A bancada funciona melhor em computador ou tablet na horizontal.</div>
+    <div class="bancada">
+      <div class="barra">
+        <span class="estado-chip" id="chip">Desenergizado</span>
+        <span class="mensagem" id="mensagem" aria-live="polite">Monte o circuito com os disjuntores desligados.</span>
+        <button class="btn btn-sobrecarga" id="btn-sobrecarga">Simular sobrecarga</button>
+      </div>
+      <div class="svg-caixa">
+        <svg id="placa" viewBox="0 0 1240 960" xmlns="http://www.w3.org/2000/svg" aria-label="Placa de montagem do painel">
+          <defs>
+            <filter id="brilho" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <g id="camada-fundo"></g>
+          <g id="camada-disp"></g>
+          <g id="camada-fios"></g>
+          <g id="camada-bornes"></g>
+          <path id="elastico" class="elastico" d="" />
+        </svg>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="motor-bancada.js"></script>
+<script>
+// ================================================================
+//  DESENHO DA PLACA
+// ================================================================
+const BORNES = {};       // id → { x, y, lado }
+const svgNS = 'http://www.w3.org/2000/svg';
+
+// lado: 'cima' (o fio sai para cima) ou 'baixo'
+function linhaBornes(disp, nomes, x0, y, passo, lado) {
+  return nomes.map((n, i) => ({ id: `${disp}.${n}`, rot: n, x: x0 + i * passo, y, lado }));
+}
+function colunas(disp, pares, x0, yCima, yBaixo, passo) {
+  const out = [];
+  pares.forEach(([c, b], i) => {
+    out.push({ id: `${disp}.${c}`, rot: c, x: x0 + i * passo, y: yCima, lado: 'cima' });
+    out.push({ id: `${disp}.${b}`, rot: b, x: x0 + i * passo, y: yBaixo, lado: 'baixo' });
+  });
+  return out;
+}
+
+const DISPOSITIVOS = [
+  { id: 'REDE', x: 40, y: 30, w: 300, h: 120,
+    bornes: linhaBornes('REDE', ['L1', 'L2', 'L3', 'PE'], 85, 118, 70, 'baixo') },
+  { id: 'Q1', x: 400, y: 30, w: 190, h: 232,
+    bornes: colunas('Q1', [['1','2'],['3','4'],['5','6']], 440, 62, 230, 55) },
+  { id: 'Q2', x: 640, y: 30, w: 155, h: 232,
+    bornes: colunas('Q2', [['1','2'],['3','4']], 685, 62, 230, 55) },
+  { id: 'K1', x: 400, y: 320, w: 330, h: 220,
+    bornes: colunas('K1', [['A1','A2'],['1','2'],['3','4'],['5','6'],['13','14'],['21','22']], 435, 352, 508, 52) },
+  { id: 'BLK', x: 760, y: 320, w: 125, h: 220,
+    bornes: colunas('K1', [['53','54'],['61','62']], 797, 352, 508, 52) },
+  { id: 'FT1', x: 400, y: 610, w: 300, h: 200,
+    bornes: colunas('FT1', [['1','2'],['3','4'],['5','6'],['95','96'],['97','98']], 440, 642, 778, 55) },
+  { id: 'M1', x: 40, y: 600, w: 300, h: 330,
+    bornes: linhaBornes('M1', ['U1', 'V1', 'W1', 'PE'], 90, 640, 62, 'cima') },
+  { id: 'S0', x: 990, y: 70, w: 190, h: 195,
+    bornes: linhaBornes('S0', ['11', '12'], 1050, 240, 70, 'baixo') },
+  { id: 'S1', x: 990, y: 292, w: 190, h: 195,
+    bornes: linhaBornes('S1', ['13', '14'], 1050, 462, 70, 'baixo') },
+  { id: 'H1', x: 990, y: 514, w: 190, h: 195,
+    bornes: linhaBornes('H1', ['X1', 'X2'], 1050, 684, 70, 'baixo') }
+];
+DISPOSITIVOS.forEach(d => d.bornes.forEach(b => BORNES[b.id] = b));
+
+function desenharPlaca() {
+  const fundo = `
+    <rect x="370" y="95" width="560" height="22" class="trilho" rx="3"/>
+    <rect x="370" y="385" width="560" height="22" class="trilho" rx="3"/>
+    <rect x="370" y="670" width="560" height="22" class="trilho" rx="3"/>
+    <rect x="965" y="20" width="240" height="700" rx="12" class="porta"/>
+    <text x="1085" y="50" class="sub" text-anchor="middle">PORTA DO PAINEL</text>`;
+  document.getElementById('camada-fundo').innerHTML = fundo;
+
+  const corpo = d => `<rect x="${d.x}" y="${d.y}" width="${d.w}" height="${d.h}" rx="10" class="corpo"/>`;
+  const rotulos = d => d.bornes.map(b => {
+    const dy = b.lado === 'cima' ? 26 : -18;
+    return `<text x="${b.x}" y="${b.y + dy}" class="rot-borne">${b.rot}</text>`;
+  }).join('');
+
+  let html = '';
+  // Rede
+  const R = DISPOSITIVOS[0];
+  html += `<g>${corpo(R)}
+    <text x="${R.x + 18}" y="${R.y + 30}" class="tag">REDE</text>
+    <text x="${R.x + 18}" y="${R.y + 50}" class="sub">Trifásica 220 V · 60 Hz</text>
+    ${R.bornes.map(b => `<rect x="${b.x - 16}" y="${b.y - 34}" width="32" height="8" rx="2" fill="${b.rot === 'PE' ? '#2e7d32' : '#455a64'}"/>
+      <text x="${b.x}" y="${b.y - 14}" class="rot-borne">${b.rot}</text>`).join('')}</g>`;
+
+  // Disjuntores
+  ['Q1', 'Q2'].forEach(q => {
+    const d = DISPOSITIVOS.find(x => x.id === q);
+    html += `<g>${corpo(d)}${rotulos(d)}
+      <text x="${d.x + 14}" y="${d.y + 86}" class="tag" font-size="20">${q}</text>
+      <text x="${d.x + 46}" y="${d.y + 85}" class="sub">${q === 'Q1' ? 'Disjuntor 3P · força' : 'Disj. 2P · comando'}</text>
+      <g class="alavanca" id="alav-${q}" data-q="${q}" tabindex="0" role="button" aria-label="Ligar ou desligar ${q}">
+        <rect x="${d.x + 18}" y="${d.y + 96}" width="${d.w - 36}" height="72" rx="8" class="base"/>
+        <rect x="${d.x + 26}" y="${d.y + 130}" width="${d.w - 52}" height="30" rx="5" class="tecla"/>
+        <text x="${d.x + d.w / 2}" y="${d.y + 152}" class="tecla-txt">O</text>
+      </g>
+    </g>`;
+  });
+
+  // Contator K1 e bloco auxiliar
+  const K = DISPOSITIVOS.find(x => x.id === 'K1');
+  html += `<g>${corpo(K)}${rotulos(K)}
+    <text x="${K.x + 180}" y="${K.y + 105}" class="tag" text-anchor="middle">K1</text>
+    <text x="${K.x + 180}" y="${K.y + 124}" class="sub" text-anchor="middle">Contator de força</text>
+    <rect x="${K.x + 130}" y="${K.y + 134}" width="100" height="26" rx="5" class="janela" id="k1-janela"/>
+    <text x="${K.x + 35}" y="${K.y + 132}" class="sub" text-anchor="middle">bobina</text>
+    <rect x="${K.x + 20}" y="${K.y + 100}" width="30" height="16" rx="3" fill="none" stroke="#5a6a8a" stroke-width="1.5"/>
+  </g>`;
+  const B = DISPOSITIVOS.find(x => x.id === 'BLK');
+  html += `<g>${corpo(B)}${rotulos(B)}
+    <text x="${B.x + B.w / 2}" y="${B.y + 105}" class="sub" text-anchor="middle">Bloco aux.</text>
+    <text x="${B.x + B.w / 2}" y="${B.y + 124}" class="tag" text-anchor="middle" font-size="18">K1</text>
+    <text x="${B.x + B.w / 2}" y="${B.y + 146}" class="sub" text-anchor="middle">NA  ·  NF</text>
+  </g>`;
+
+  // Relé térmico
+  const F = DISPOSITIVOS.find(x => x.id === 'FT1');
+  html += `<g>${corpo(F)}${rotulos(F)}
+    <text x="${F.x + 95}" y="${F.y + 100}" class="tag" text-anchor="middle">FT1</text>
+    <text x="${F.x + 95}" y="${F.y + 120}" class="sub" text-anchor="middle">Relé térmico</text>
+    <rect x="${F.x + 175}" y="${F.y + 82}" width="100" height="22" rx="5" class="ind-ft" id="ft-ind"/>
+    <text x="${F.x + 225}" y="${F.y + 98}" class="sub" text-anchor="middle" id="ft-ind-txt">normal</text>
+    <g class="reset" id="ft-reset" tabindex="0" role="button" aria-label="Rearmar o relé térmico">
+      <circle cx="${F.x + 225}" cy="${F.y + 126}" r="13"/>
+      <text x="${F.x + 225}" y="${F.y + 131}" class="rot-borne" fill="white" style="fill:white;font-size:11px">R</text>
+    </g>
+  </g>`;
+
+  // Motor
+  const M = DISPOSITIVOS.find(x => x.id === 'M1');
+  const cx = M.x + 150, cy = M.y + 205;
+  const pas = [0, 60, 120, 180, 240, 300].map(a =>
+    `<path d="M0,0 L0,-52 Q16,-40 10,-6 Z" transform="rotate(${a})" fill="#90a4c4"/>`).join('');
+  html += `<g>${corpo(M)}${rotulos(M)}
+    <g class="motor" id="motor">
+      <circle cx="${cx}" cy="${cy}" r="78" fill="#34495e"/>
+      <circle cx="${cx}" cy="${cy}" r="66" fill="#1f2d3d"/>
+      <g transform="translate(${cx},${cy})"><g class="rotor" id="rotor">${pas}<circle r="12" fill="#cfd8e3"/></g></g>
+    </g>
+    <text x="${M.x + 18}" y="${M.y + 312}" class="tag" font-size="18">M1</text>
+    <text x="${M.x + 52}" y="${M.y + 312}" class="sub">Motor trifásico</text>
+    <g class="seta-giro" id="seta-giro"><text x="${M.x + M.w - 18}" y="${M.y + 312}" class="sub" text-anchor="end" id="seta-giro-txt"></text></g>
+  </g>`;
+
+  // Botões e sinaleiro
+  [['S0', '#d32f2f', 'S0 · desliga (NF)'], ['S1', '#2e9d4f', 'S1 · liga (NA)']].forEach(([s, cor, rot]) => {
+    const d = DISPOSITIVOS.find(x => x.id === s);
+    html += `<g>${corpo(d)}${rotulos(d)}
+      <g class="botao" id="bt-${s}" data-botao="${s}" tabindex="0" role="button" aria-label="Pressionar ${s}">
+        <circle cx="${d.x + 95}" cy="${d.y + 72}" r="44" class="anel"/>
+        <circle cx="${d.x + 95}" cy="${d.y + 72}" r="32" fill="${cor}" class="tecla-bt"/>
+      </g>
+      <text x="${d.x + 95}" y="${d.y + 136}" class="sub" text-anchor="middle">${rot}</text>
+    </g>`;
+  });
+  const H = DISPOSITIVOS.find(x => x.id === 'H1');
+  html += `<g>${corpo(H)}${rotulos(H)}
+    <circle cx="${H.x + 95}" cy="${H.y + 72}" r="44" class="anel" fill="#c9ced8" stroke="#8e98a8"/>
+    <circle cx="${H.x + 95}" cy="${H.y + 72}" r="30" class="luz" id="h1-luz"/>
+    <text x="${H.x + 95}" y="${H.y + 136}" class="sub" text-anchor="middle">H1 · sinaleiro verde</text>
+  </g>`;
+
+  document.getElementById('camada-disp').innerHTML = html;
+
+  // Bornes (por cima dos fios, para receber o clique)
+  document.getElementById('camada-bornes').innerHTML = Object.values(BORNES).map(b => `
+    <g class="borne" data-b="${b.id}" tabindex="0" role="button" aria-label="Borne ${b.id.replace('.', ' ')}">
+      <circle cx="${b.x}" cy="${b.y}" r="17" fill="transparent"/>
+      <circle cx="${b.x}" cy="${b.y}" r="9" class="parafuso"/>
+      <line x1="${b.x - 5}" y1="${b.y}" x2="${b.x + 5}" y2="${b.y}" class="fenda"/>
+    </g>`).join('');
+}
+
+// ================================================================
+//  ESTADO
+// ================================================================
+const CORES = [
+  { id: 'preto', nome: 'Preto', hex: '#1f1f1f' },
+  { id: 'vermelho', nome: 'Vermelho', hex: '#d32f2f' },
+  { id: 'marrom', nome: 'Marrom', hex: '#6d4c41' },
+  { id: 'pe', nome: 'Verde-amarelo', hex: '#2e7d32' }
+];
+const CHAVE = 'bancada-partida-direta';
+let fios = [];
+let corAtual = 'preto';
+let pendente = null;          // borne aguardando o segundo clique
+let selecionado = -1;         // índice do fio selecionado
+let desafio = 'partida';
+let est = { Q1: false, Q2: false, S0: false, S1: false, FT1: false, K1: false };
+let ultimo = null;            // último resultado do motor
+
+const DESAFIOS = {
+  partida: `<p>Monte a <strong>partida direta</strong> do motor M1 com proteção por relé térmico.</p>
+    <ol><li>Ao energizar, o motor fica parado.</li><li>Ao pulsar S1, o motor liga.</li><li>Ao soltar S1, continua ligado (selo).</li>
+    <li>Ao pulsar S0, desliga.</li><li>Na sobrecarga, o FT1 desliga o motor.</li><li>Motor aterrado (PE).</li></ol>`,
+  sinalizacao: `<p>Acrescente à partida direta o <strong>sinaleiro H1</strong>, que indica motor ligado.</p>
+    <ol><li>Todos os requisitos do desafio 1.</li><li>H1 acende quando o motor está ligado.</li><li>H1 apaga quando o motor está desligado.</li></ol>
+    <p style="margin-top:8px;color:var(--texto-muted)">Use um contato NA do K1 que ainda esteja livre.</p>`
+};
+
+function salvar() { try { localStorage.setItem(CHAVE, JSON.stringify({ fios, desafio })); } catch (e) {} }
+function carregar() {
+  try {
+    const d = JSON.parse(localStorage.getItem(CHAVE));
+    if (d && Array.isArray(d.fios)) fios = d.fios.filter(f => BORNES[f.a] && BORNES[f.b]);
+    if (d && DESAFIOS[d.desafio]) desafio = d.desafio;
+  } catch (e) {}
+}
+
+const energizado = () => est.Q1 || est.Q2;
+
+function mensagem(txt, tipo) {
+  const m = document.getElementById('mensagem');
+  m.textContent = txt; m.className = 'mensagem' + (tipo ? ' ' + tipo : '');
+}
+
+// ================================================================
+//  FIOS
+// ================================================================
+function caminho(a, b) {
+  const p = BORNES[a], q = BORNES[b];
+  const dist = Math.hypot(q.x - p.x, q.y - p.y);
+  const k = Math.max(45, Math.min(140, dist / 2.6));
+  const dy1 = p.lado === 'cima' ? -k : k, dy2 = q.lado === 'cima' ? -k : k;
+  return `M${p.x},${p.y} C${p.x},${p.y + dy1} ${q.x},${q.y + dy2} ${q.x},${q.y}`;
+}
+
+function desenharFios() {
+  const energ = new Set();
+  if (ultimo && ultimo.nos) fios.forEach((f, i) => { if (ultimo.nos.fasesEm(f.a).size) energ.add(i); });
+  document.getElementById('camada-fios').innerHTML = fios.map((f, i) => {
+    const cor = CORES.find(c => c.id === f.cor) || CORES[0];
+    const d = caminho(f.a, f.b);
+    return `<g class="fio${energ.has(i) ? ' energizado' : ''}${i === selecionado ? ' sel' : ''}" data-i="${i}">
+      <path d="${d}" class="halo"/>
+      <path d="${d}" class="cabo" stroke="${cor.hex}"/>
+      ${f.cor === 'pe' ? `<path d="${d}" class="listra"/>` : ''}
+      <path d="${d}" class="alvo"><title>${f.a} ↔ ${f.b}</title></path>
+    </g>`;
+  }).join('');
+  document.getElementById('btn-excluir').disabled = selecionado < 0;
+  document.getElementById('btn-desfazer').disabled = !fios.length;
+}
+
+function bloquearSeEnergizado() {
+  if (!energizado()) return false;
+  mensagem('Desligue Q1 e Q2 antes de mexer na fiação. Nunca trabalhe no painel energizado.', 'alerta');
+  return true;
+}
+
+function clicarBorne(id) {
+  if (bloquearSeEnergizado()) return;
+  selecionado = -1;
+  if (!pendente) {
+    pendente = id;
+    marcarPendente();
+    mensagem(`Borne ${id} selecionado. Clique no borne de destino.`);
+    return;
+  }
+  if (pendente === id) { cancelarPendente(); mensagem('Ligação cancelada.'); return; }
+  const a = pendente, b = id;
+  cancelarPendente();
+  if (fios.some(f => (f.a === a && f.b === b) || (f.a === b && f.b === a))) {
+    mensagem('Esses dois bornes já estão ligados.', 'alerta'); return;
+  }
+  const cor = (a.endsWith('.PE') || b.endsWith('.PE')) ? 'pe' : corAtual;
+  fios.push({ a, b, cor });
+  salvar();
+  mensagem(`Fio ligado: ${a} → ${b}.`);
+  atualizar();
+}
+
+function marcarPendente() {
+  document.querySelectorAll('.borne').forEach(g => g.classList.toggle('pendente', g.dataset.b === pendente));
+}
+function cancelarPendente() {
+  pendente = null; marcarPendente();
+  document.getElementById('elastico').setAttribute('d', '');
+}
+
+function excluirSelecionado() {
+  if (selecionado < 0 || bloquearSeEnergizado()) return;
+  const f = fios.splice(selecionado, 1)[0];
+  selecionado = -1; salvar();
+  mensagem(`Fio removido: ${f.a} → ${f.b}.`);
+  atualizar();
+}
+
+// ================================================================
+//  SIMULAÇÃO
+// ================================================================
+function atualizar() {
+  const antes = { ...est };
+  const r = resolver(fios, est);
+  est = r.est;
+  ultimo = r;
+
+  if (r.semProtecao) {
+    est.Q1 = false; est.Q2 = false; est.K1 = false;
+    ultimo = resolver(fios, est);
+    mensagem(`Curto-circuito entre ${r.curto.join(' e ')} direto na rede, antes dos disjuntores! Desfaça essa ligação.`, 'erro');
+  } else if (r.disparos.length) {
+    const d = r.disparos[0];
+    mensagem(`${d.disjuntor} desarmou: curto-circuito entre ${d.fases.join(' e ')}.`, 'erro');
+  } else if (r.instavel) {
+    mensagem('K1 está trepidando: a bobina é alimentada por um contato NF do próprio K1.', 'erro');
+  } else if (r.motor.faltaFase && est.K1) {
+    mensagem('Falta de fase: o motor não recebe as três fases e não parte.', 'alerta');
+  } else if (antes.K1 !== est.K1) {
+    mensagem(est.K1 ? 'K1 energizado.' : 'K1 desenergizado.', est.K1 ? 'ok' : '');
+  }
+
+  // Disjuntores
+  ['Q1', 'Q2'].forEach(q => {
+    const g = document.getElementById('alav-' + q);
+    g.classList.toggle('ligado', est[q]);
+    const d = DISPOSITIVOS.find(x => x.id === q);
+    g.querySelector('.tecla').setAttribute('y', est[q] ? d.y + 104 : d.y + 130);
+    g.querySelector('.tecla-txt').textContent = est[q] ? 'I' : 'O';
+    g.querySelector('.tecla-txt').setAttribute('y', est[q] ? d.y + 126 : d.y + 152);
+  });
+  // K1
+  const jan = document.getElementById('k1-janela');
+  jan.classList.toggle('ativo', est.K1);
+  jan.classList.toggle('trepida', !!r.instavel);
+  // FT1
+  document.getElementById('ft-ind').classList.toggle('disparado', est.FT1);
+  document.getElementById('ft-ind-txt').textContent = est.FT1 ? 'DISPARADO' : 'normal';
+  // Botões
+  ['S0', 'S1'].forEach(s => document.getElementById('bt-' + s).classList.toggle('apertado', est[s]));
+  // H1
+  document.getElementById('h1-luz').classList.toggle('acesa', !!ultimo.H1);
+  // Motor
+  const m = ultimo.motor || {};
+  const rotor = document.getElementById('rotor');
+  rotor.classList.toggle('gira-h', !!m.girando && m.sentido === 'horario');
+  rotor.classList.toggle('gira-a', !!m.girando && m.sentido === 'antihorario');
+  document.getElementById('motor').classList.toggle('zumbido', !m.girando && !!m.faltaFase && est.K1);
+  document.getElementById('seta-giro').classList.toggle('mostrar', !!m.girando);
+  document.getElementById('seta-giro-txt').textContent = m.girando ? (m.sentido === 'horario' ? '↻ sentido horário' : '↺ sentido anti-horário') : '';
+  // Chip
+  const chip = document.getElementById('chip');
+  chip.textContent = energizado() ? 'Energizado' : 'Desenergizado';
+  chip.classList.toggle('on', energizado());
+
+  desenharFios();
+}
+
+function alternarDisjuntor(q) {
+  if (pendente) cancelarPendente();
+  est[q] = !est[q];
+  if (!est[q]) mensagem(`${q} desligado.`); else mensagem(`${q} ligado.`);
+  atualizar();
+}
+
+function pressionar(s, valor) {
+  if (est[s] === valor) return;
+  est[s] = valor;
+  atualizar();
+}
+
+function sobrecarga() {
+  if (!ultimo || !ultimo.motor || !ultimo.motor.girando) { mensagem('Ligue o motor primeiro para simular a sobrecarga.', 'alerta'); return; }
+  if (!termicoNoCaminho(fios, est)) { mensagem('A corrente do motor não passa pelo FT1: a sobrecarga não foi detectada!', 'erro'); return; }
+  est.FT1 = true;
+  atualizar();
+  if (ultimo.motor.girando) mensagem('FT1 disparou, mas o motor continua ligado: o contato 95-96 não está no comando!', 'erro');
+  else mensagem('Sobrecarga: o FT1 disparou e desligou o motor. Rearme no botão R do FT1.', 'alerta');
+}
+
+// ================================================================
+//  VERIFICAÇÃO
+// ================================================================
+function verificar() {
+  const itens = verificarMontagem(fios, desafio);
+  const caixa = document.getElementById('resultado');
+  const ok = itens.every(i => i.ok);
+  const total = desafio === 'sinalizacao' ? 8 : 7;
+  caixa.innerHTML = (ok && itens.length === total ? '<div class="resumo-ok">Montagem correta! Todos os testes passaram.</div>' : '') +
+    itens.map(i => `<div class="item ${i.ok ? 'ok' : 'erro'}"><strong>${i.ok ? '✓' : '✗'} ${i.titulo}</strong>${i.explicacao ? `<span>${i.explicacao}</span>` : ''}</div>`).join('') +
+    (!ok ? '<div class="item" style="border-color:#9aa4b2;background:#f4f6fa">Os testes seguintes só rodam depois que o item com erro for corrigido.</div>' : '');
+}
+
+// ================================================================
+//  EVENTOS
+// ================================================================
+function pontoSVG(evt) {
+  const svg = document.getElementById('placa');
+  const p = svg.createSVGPoint(); p.x = evt.clientX; p.y = evt.clientY;
+  return p.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+function iniciar() {
+  carregar();
+  desenharPlaca();
+
+  // Cores
+  document.getElementById('cores').innerHTML = CORES.map(c =>
+    `<button class="cor${c.id === corAtual ? ' ativo' : ''}" data-cor="${c.id}"><i style="background:${c.id === 'pe' ? 'linear-gradient(135deg,#2e7d32 50%,#f6d200 50%)' : c.hex}"></i>${c.nome}</button>`).join('');
+  document.querySelectorAll('.cor').forEach(b => b.addEventListener('click', () => {
+    corAtual = b.dataset.cor;
+    document.querySelectorAll('.cor').forEach(x => x.classList.toggle('ativo', x === b));
+  }));
+
+  // Desafios
+  const marcarDesafio = () => {
+    document.querySelectorAll('.desafio').forEach(b => b.classList.toggle('ativo', b.dataset.desafio === desafio));
+    document.getElementById('objetivo').innerHTML = DESAFIOS[desafio];
+    document.getElementById('resultado').innerHTML = '';
+  };
+  document.querySelectorAll('.desafio').forEach(b => b.addEventListener('click', () => { desafio = b.dataset.desafio; salvar(); marcarDesafio(); }));
+  marcarDesafio();
+
+  const svg = document.getElementById('placa');
+  svg.addEventListener('click', e => {
+    const borne = e.target.closest('.borne');
+    if (borne) { clicarBorne(borne.dataset.b); return; }
+    const fio = e.target.closest('.fio');
+    if (fio) {
+      if (pendente) cancelarPendente();
+      selecionado = Number(fio.dataset.i) === selecionado ? -1 : Number(fio.dataset.i);
+      if (selecionado >= 0) mensagem(`Fio selecionado: ${fios[selecionado].a} → ${fios[selecionado].b}. Aperte Delete para removê-lo.`);
+      desenharFios(); return;
+    }
+    const alav = e.target.closest('.alavanca');
+    if (alav) { alternarDisjuntor(alav.dataset.q); return; }
+    if (e.target.closest('#ft-reset')) { est.FT1 = false; mensagem('FT1 rearmado.'); atualizar(); return; }
+    if (selecionado >= 0) { selecionado = -1; desenharFios(); }
+  });
+  svg.addEventListener('pointermove', e => {
+    if (!pendente) return;
+    const p = pontoSVG(e), b = BORNES[pendente];
+    document.getElementById('elastico').setAttribute('d', `M${b.x},${b.y} L${p.x},${p.y}`);
+  });
+
+  // Botões S0 e S1: segurar para pressionar
+  document.querySelectorAll('.botao').forEach(g => {
+    const s = g.dataset.botao;
+    g.addEventListener('pointerdown', e => { e.preventDefault(); g.setPointerCapture?.(e.pointerId); pressionar(s, true); });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => g.addEventListener(ev, () => pressionar(s, false)));
+    g.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); pressionar(s, true); } });
+    g.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') pressionar(s, false); });
+  });
+
+  // Teclado nos bornes, alavancas e reset
+  svg.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const borne = e.target.closest('.borne'), alav = e.target.closest('.alavanca');
+    if (borne) { e.preventDefault(); clicarBorne(borne.dataset.b); }
+    else if (alav) { e.preventDefault(); alternarDisjuntor(alav.dataset.q); }
+    else if (e.target.closest('#ft-reset')) { e.preventDefault(); est.FT1 = false; mensagem('FT1 rearmado.'); atualizar(); }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && pendente) { cancelarPendente(); mensagem('Ligação cancelada.'); }
+    if ((e.key === 'Delete' || e.key === 'Backspace') && selecionado >= 0 && !e.target.closest('input,textarea')) { e.preventDefault(); excluirSelecionado(); }
+  });
+
+  document.getElementById('btn-excluir').addEventListener('click', excluirSelecionado);
+  document.getElementById('btn-desfazer').addEventListener('click', () => {
+    if (!fios.length || bloquearSeEnergizado()) return;
+    const f = fios.pop(); selecionado = -1; salvar();
+    mensagem(`Desfeito: ${f.a} → ${f.b}.`); atualizar();
+  });
+  document.getElementById('btn-limpar').addEventListener('click', () => {
+    if (!fios.length || bloquearSeEnergizado()) return;
+    if (!confirm('Remover toda a fiação da bancada?')) return;
+    fios = []; selecionado = -1; salvar(); cancelarPendente();
+    mensagem('Fiação removida.'); atualizar();
+  });
+  document.getElementById('btn-verificar').addEventListener('click', verificar);
+  document.getElementById('btn-sobrecarga').addEventListener('click', sobrecarga);
+
+  atualizar();
+  mensagem(fios.length ? 'Montagem anterior recuperada. Continue de onde parou.' : 'Monte o circuito com os disjuntores desligados.');
+}
+
+iniciar();
+</script>
+</body>
+</html>

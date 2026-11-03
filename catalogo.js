@@ -30,10 +30,12 @@ const MATERIAS = [
         aula: false, exercicios: false, simulador: "" },          // slides 60–64
       { id: "diagramas-pratica", titulo: "Diagramas elétricos e prática de montagem",
         resumo: "Partida direta: diagrama de comando e de força, montagem em bancada e no simulador",
-        aula: false, exercicios: false, simulador: "" }           // slides 65–71
+        aula: false, exercicios: false, simulador: "simuladores/bancada.html" }           // slides 65–71
     ],
     // Simuladores da matéria: { titulo, desc, arquivo: "simuladores/nome.html" }
-    simuladores: []
+    simuladores: [
+      { titulo: "Bancada virtual: partida direta", desc: "Monte a força e o comando, energize e teste. Correção automática.", arquivo: "simuladores/bancada.html" }
+    ]
   },
   {
     id: "eletricidade",
